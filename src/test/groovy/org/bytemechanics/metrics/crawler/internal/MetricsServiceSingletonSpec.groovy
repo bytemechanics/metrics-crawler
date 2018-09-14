@@ -16,11 +16,47 @@
 
 package org.bytemechanics.metrics.crawler.internal
 
+import spock.lang.Specification
+import spock.lang.Unroll
+import java.util.Optional
+import java.util.logging.*
+import java.util.stream.*
+import spock.lang.Shared
+
 /**
- *
  * @author afarre
  */
-class MetricsServiceSingletonSpec {
+class MetricsServiceSingletonSpec extends Specification{
 	
+	static final singleton=MetricsServiceSingleton.getInstance()
+	
+	def setupSpec(){
+		println(">>>>> MetricsServiceSingletonSpec >>>> setupSpec")
+		final InputStream inputStream = MetricsServiceSingletonSpec.class.getResourceAsStream("/logging.properties");
+		try{
+			LogManager.getLogManager().readConfiguration(inputStream);
+		}catch (final IOException e){
+			Logger.getAnonymousLogger().severe("Could not load default logging.properties file");
+			Logger.getAnonymousLogger().severe(e.getMessage());
+		}finally{
+			if(inputStream!=null)
+				inputStream.close();
+		}
+	}
+	
+	@Unroll
+	def "When singleton is instantiatied #time times must always return the same instance"(){
+		println(">>>>> MetricsServiceSingletonSpec >>>> When singleton is instantiatied $time times must always return the same instance")
+
+		given:
+			def lastInstance=MetricsServiceSingleton.getInstance()
+			
+		expect:
+			lastInstance!=null
+			lastInstance==singleton
+			
+		where:
+			time << [1,2,3,4,5,6,7,8,9,10]
+	}
 }
 

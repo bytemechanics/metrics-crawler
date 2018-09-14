@@ -17,6 +17,8 @@ package org.bytemechanics.metrics.crawler.internal;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Objects;
+import java.util.Optional;
 import org.bytemechanics.metrics.crawler.MeasureReducer;
 import org.bytemechanics.metrics.crawler.beans.MetricSnapshot;
 import org.bytemechanics.metrics.crawler.internal.commons.string.SimpleFormat;
@@ -55,7 +57,41 @@ public class Measure<TYPE> {
 	
 	@Override
 	public String toString() {
-		return SimpleFormat.format("Measure[timestamp={}, measureType={}, measure={},reducer={}]",timestamp.format(DateTimeFormatter.ISO_DATE_TIME),measure.getClass(),measure,this.reducer);
+		return SimpleFormat.format("Measure[timestamp={}, measureType={}, measure={},reducer={}]",
+									Optional.ofNullable(timestamp).map(val -> val.format(DateTimeFormatter.ISO_DATE_TIME)).orElse("null"),
+									Optional.ofNullable(measure).map(val -> val.getClass()).map(val -> val.toString()).orElse("null"),
+									measure,
+									reducer);
+	}
+
+	@Override
+	public int hashCode() {
+		int hash = 7;
+		hash = 19 * hash + Objects.hashCode(this.timestamp);
+		hash = 19 * hash + Objects.hashCode(this.measure);
+		hash = 19 * hash + Objects.hashCode(this.reducer);
+		return hash;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null) {
+			return false;
+		}
+		if (getClass() != obj.getClass()) {
+			return false;
+		}
+		final Measure<?> other = (Measure<?>) obj;
+		if (!Objects.equals(this.timestamp, other.timestamp)) {
+			return false;
+		}
+		if (!Objects.equals(this.measure, other.measure)) {
+			return false;
+		}
+		return Objects.equals(this.reducer, other.reducer);
 	}
 
 	public static boolean notNull(final Measure _measure){

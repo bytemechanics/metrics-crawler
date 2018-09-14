@@ -17,8 +17,6 @@ package org.bytemechanics.metrics.crawler.internal;
 
 import java.text.NumberFormat;
 import java.time.Duration;
-import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
 import java.util.Optional;
 import java.util.function.Supplier;
 import org.bytemechanics.metrics.crawler.MeasureReducer;
@@ -36,18 +34,15 @@ public enum MeasureReducers {
 				}
 				@Override
 				public final Optional<Duration> accumulate(final Duration _val1,final Duration _val2) {
-						return Optional.ofNullable(_val1)
-									.map(val1 -> val1.plus(_val2));
+					return apply(Duration.class,_val1,_val2,() -> _val1.plus(_val2));
 				}
 				@Override
 				public final Optional<Duration> max(final Duration _val1,final Duration _val2) {
-					return Optional.ofNullable(_val1)
-									.map(val1 -> (val1.compareTo(_val2)>0)? val1 : _val2);
+					return apply(Duration.class,_val1,_val2,() -> ((_val1.compareTo(_val2)>0)? _val1 : _val2));
 				}
 				@Override
 				public final Optional<Duration> min(final Duration _val1,final Duration _val2) {
-					return Optional.ofNullable(_val1)
-									.map(val1 -> (val1.compareTo(_val2)>0)? (Duration)_val2 : val1);
+					return apply(Duration.class,_val1,_val2,() -> ((_val1.compareTo(_val2)>0)? _val2 : _val1));
 				}
 				@Override
 				public final Optional<Duration> average(final Duration _val,final long _hits){
@@ -56,8 +51,12 @@ public enum MeasureReducers {
 				}
 				@Override
 				public final String toString(final Duration _val) {
-					final LocalTime t = LocalTime.MIDNIGHT.plus((Duration)_val);
-					return DateTimeFormatter.ofPattern("HH:mm:ss").format(t);
+					if(_val==null)
+						return "null";
+					long seconds = _val.getSeconds();
+					long absSeconds = Math.abs(seconds);
+					String positive = String.format("%d:%02d:%02d",absSeconds / 3600,(absSeconds % 3600) / 60,absSeconds % 60);
+					return seconds < 0 ? "-" + positive : positive;
 				}
 			}),
 	LONG(new MeasureReducer<Long>(){
@@ -67,18 +66,15 @@ public enum MeasureReducers {
 				}
 				@Override
 				public final Optional<Long> accumulate(final Long _val1,final Long _val2) {
-					return Optional.ofNullable(_val1)
-									.map(val1 -> val1+_val2);
+					return apply(Long.class,_val1,_val2,() -> _val1+_val2);
 				}
 				@Override
 				public final Optional<Long> max(final Long _val1,final  Long _val2) {
-					return Optional.ofNullable(_val1)
-									.map(val1 -> (val1.compareTo(_val2)>0)? val1 : _val2);
+					return apply(Long.class,_val1,_val2,() -> ((_val1.compareTo(_val2)>0)? _val1 : _val2));
 				}
 				@Override
 				public final Optional<Long> min(final Long _val1,final  Long _val2) {
-					return Optional.ofNullable(_val1)
-									.map(val1 -> (val1.compareTo(_val2)>0)? _val2 : val1);
+					return apply(Long.class,_val1,_val2,() -> ((_val1.compareTo(_val2)>0)? _val2 : _val1));
 				}
 				@Override
 				public final Optional<Long> average(final Long _val,final long _hits){
@@ -87,6 +83,8 @@ public enum MeasureReducers {
 				}
 				@Override
 				public final String toString(final Long _val) {
+					if(_val==null)
+						return "null";
 					return NumberFormat.getNumberInstance().format(_val);
 				}
 			}),
@@ -97,18 +95,15 @@ public enum MeasureReducers {
 				}
 				@Override
 				public final Optional<Double> accumulate(final Double _val1,final  Double _val2) {
-					return Optional.ofNullable(_val1)
-									.map(val1 -> val1+_val2);
+					return apply(Double.class,_val1,_val2,() -> _val1+_val2);
 				}
 				@Override
 				public final Optional<Double> max(final Double _val1,final  Double _val2) {
-					return Optional.ofNullable(_val1)
-									.map(val1 -> (val1.compareTo(_val2)>0)? val1 : _val2);
+					return apply(Double.class,_val1,_val2,() -> ((_val1.compareTo(_val2)>0)? _val1 : _val2));
 				}
 				@Override
 				public final Optional<Double> min(final Double _val1,final  Double _val2) {
-					return Optional.ofNullable(_val1)
-									.map(val1 -> (val1.compareTo(_val2)>0)? _val2 : val1);
+					return apply(Double.class,_val1,_val2,() -> ((_val1.compareTo(_val2)>0)? _val2 : _val1));
 				}
 				@Override
 				public final Optional<Double> average(final Double _val,final long _hits){
@@ -117,6 +112,8 @@ public enum MeasureReducers {
 				}
 				@Override
 				public final String toString(final Double _val) {
+					if(_val==null)
+						return "null";
 					return NumberFormat.getNumberInstance().format(_val);
 				}
 			}),
@@ -128,6 +125,21 @@ public enum MeasureReducers {
 		this.reducer=_reducer;
 	}
 	
+	protected static <T> Optional<T> apply(final Class<T> _class,final T _val1,final T _val2,final Supplier<T> _supplier){
+		if(_val1==null){
+			if(_val2==null){
+				return Optional.empty();
+			}else{
+				return Optional.of(_val2);
+			}
+		}else{
+			if(_val2==null){
+				return Optional.of(_val1);
+			}else{
+				return Optional.of(_supplier.get());
+			}
+		}		
+	}
 	
 	public <T> T identity(final Class<T> _class){
 		return (T)this.reducer.identity();

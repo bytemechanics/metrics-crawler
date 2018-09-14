@@ -85,12 +85,16 @@ public class MetricSnapshot<TYPE> implements Comparable<MetricSnapshot>{
 
 		return MetricSnapshot.builder(this.measureReducer)
 						.name(this.name)
-						.samplingAccumulatedMeasure(this.measureReducer.accumulate(this.samplingAccumulatedMeasure, _metric.samplingAccumulatedMeasure))
+						.samplingAccumulatedMeasure(this.measureReducer.accumulate(this.samplingAccumulatedMeasure, _metric.samplingAccumulatedMeasure)
+																		.orElse(this.measureReducer.identity()))
 						.samplingSize(this.samplingSize+_metric.samplingSize)
 						.totalHits(this.totalHits+_metric.totalHits)
-						.maxMeasure(this.measureReducer.max(this.maxMeasure,_metric.maxMeasure))
-						.minMeasure(this.measureReducer.min(this.minMeasure,_metric.minMeasure))
-						.averageMeasure(this.measureReducer.min(this.averageMeasure,_metric.minMeasure))
+						.maxMeasure(this.measureReducer.max(this.maxMeasure,_metric.maxMeasure)
+														.orElse(this.measureReducer.identity()))
+						.minMeasure(this.measureReducer.min(this.minMeasure,_metric.minMeasure)
+														.orElse(this.measureReducer.identity()))
+						.averageMeasure(this.measureReducer.min(this.averageMeasure,_metric.minMeasure)
+															.orElse(this.measureReducer.identity()))
 						.lastMeasure((this.lastOccurrence.isBefore(_metric.lastOccurrence))? _metric.lastMeasure : this.lastMeasure)
 						.lastOccurrence((this.lastOccurrence.isBefore(_metric.lastOccurrence))? _metric.lastOccurrence : this.lastOccurrence)
 					.build();
@@ -99,6 +103,10 @@ public class MetricSnapshot<TYPE> implements Comparable<MetricSnapshot>{
 	
 	@Override
 	public int compareTo(final MetricSnapshot _metric) {
+		if(_metric==null)
+			return -1;
+		if(this.name==null)
+			return 1;
 		return this.name.compareTo(_metric.name);
 	}
 

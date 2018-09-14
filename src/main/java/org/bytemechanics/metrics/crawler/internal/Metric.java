@@ -16,10 +16,13 @@
 package org.bytemechanics.metrics.crawler.internal;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Objects;
 import java.util.Queue;
+import java.util.stream.Collectors;
 import org.bytemechanics.metrics.crawler.MeasureReducer;
 import org.bytemechanics.metrics.crawler.beans.MetricSnapshot;
+import org.bytemechanics.metrics.crawler.exceptions.IncorrectSamplingSize;
 import org.bytemechanics.metrics.crawler.internal.commons.collections.FastDropLastQueue;
 import org.bytemechanics.metrics.crawler.internal.commons.string.SimpleFormat;
 
@@ -35,21 +38,30 @@ public class Metric<TYPE> {
 	private final MeasureReducer<TYPE> reducer;
 
 	public Metric(final String _name,final int _samplingSize,final MeasureReducer<TYPE> _reducer) {
+		if(_name==null)
+			throw new NullPointerException("Name can not be null to create a Metric");
 		this.name = _name;
-		this.hits = 0l;
-		this.measures = new FastDropLastQueue<>(_samplingSize);
+		if(_reducer==null)
+			throw new NullPointerException(SimpleFormat.format("Metric {} reducer can not be null to create a Metric",_name));
 		this.reducer=_reducer;
+		if(_samplingSize<=0)
+			throw new IncorrectSamplingSize(_name, _samplingSize);
+		this.measures = new FastDropLastQueue<>(_samplingSize);
+		this.hits = 0l;
 	}
 
 	
 	public String getName() {
 		return name;
 	}
-	public Queue<Measure<TYPE>> getMeasures() {
-		return measures;
+	public List<Measure<TYPE>> getMeasures() {
+		return measures.stream().collect(Collectors.toList());
 	}
 	public long getHits() {
 		return hits;
+	}
+	public MeasureReducer<TYPE> getReducer() {
+		return reducer;
 	}
 
 	
@@ -79,14 +91,15 @@ public class Metric<TYPE> {
 									.name(this.name)
 								.build();
 	}
-	
-	
+
 	@Override
 	public int hashCode() {
-		int hash = 3;
-		hash = 83 * hash + Objects.hashCode(this.name);
+		int hash = 7;
+		hash = 67 * hash + Objects.hashCode(this.name);
+		hash = 67 * hash + Objects.hashCode(this.reducer);
 		return hash;
 	}
+
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj) {
@@ -98,12 +111,14 @@ public class Metric<TYPE> {
 		if (getClass() != obj.getClass()) {
 			return false;
 		}
-		final Metric other = (Metric) obj;
+		final Metric<?> other = (Metric<?>) obj;
 		if (!Objects.equals(this.name, other.name)) {
 			return false;
 		}
-		return true;
+		return Objects.equals(this.reducer, other.reducer);
 	}
+	
+
 
 	@Override
 	public String toString() {
