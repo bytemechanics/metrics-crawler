@@ -20,6 +20,7 @@ import java.util.Optional;
 /**
  *
  * @author afarre
+ * @param <T>
  */
 public interface MeasureReducer<T> {
 	
