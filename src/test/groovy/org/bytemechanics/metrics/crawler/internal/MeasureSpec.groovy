@@ -164,8 +164,8 @@ class MeasureSpec extends Specification{
 		then:
 			obj!=null
 			obj.toMetricSnapshot().getSamplingSize()==expected.getSamplingSize();
-			obj.toMetricSnapshot().getSamplingAccumulatedMeasure()==expected.getSamplingAccumulatedMeasure();
-			obj.toMetricSnapshot().getTimestamp()==expected.getTimestamp();
+			obj.toMetricSnapshot().getAccumulatedSamples()==expected.getAccumulatedSamples();
+			obj.toMetricSnapshot().getLastOccurrence()==expected.getLastOccurrence();
 			
 		where:
 			time						| measure					| reducer							| type				
@@ -182,9 +182,61 @@ class MeasureSpec extends Specification{
 			
 			expected = MetricSnapshot.builder(reducer)
 								.samplingSize(1)
-								.samplingAccumulatedMeasure(measure)
+								.accumulatedSamples(measure)
 								.lastOccurrence(time)
 							.build();
 	}		
+
+	@Unroll
+	def "Two measures of _time:#time,_measure:#measure,_reducer:#reducer of type #type must return the same hashcode()"(){
+		println(">>>>> MeasureSpec >>>> Two measures of _time:$time,_measure:$measure,_reducer:$reducer of type $type must return the same hashcode()")
+
+		when:
+			def obj1=new Measure(time,measure,reducer)
+			def obj2=new Measure(time,measure,reducer)
+			
+		then:
+			obj1.hashCode()==obj2.hashCode()
+			
+		where:
+			time						| measure					| reducer							| type				
+			LocalDateTime.now()			| Duration.ofSeconds(10)	| MeasureReducers.DURATION.get()	| Duration.class	
+			LocalDateTime.now()			| null						| MeasureReducers.DURATION.get()	| Duration.class	
+			null						| Duration.ofHours(10)		| MeasureReducers.DURATION.get()	| Duration.class	
+			LocalDateTime.now()			| 10l						| MeasureReducers.LONG.get()		| Long.class		
+			LocalDateTime.now()			| null						| MeasureReducers.LONG.get()		| Long.class		
+			null						| -111l						| MeasureReducers.LONG.get()		| Long.class		
+			LocalDateTime.now()			| 10.2d						| MeasureReducers.DOUBLE.get()		| Double.class		
+			LocalDateTime.now()			| null						| MeasureReducers.DOUBLE.get()		| Double.class		
+			null						| -2.8d						| MeasureReducers.DOUBLE.get()		| Double.class		
+			null						| null						| MeasureReducers.DURATION.get()	| Double.class		
+	}		
+
+
+	@Unroll
+	def "Two measures of _time:#time,_measure:#measure,_reducer:#reducer of type #type must be equals()"(){
+		println(">>>>> MeasureSpec >>>> Two measures of _time:$time,_measure:$measure,_reducer:$reducer of type $type must be equals()")
+
+		when:
+			def obj1=new Measure(time,measure,reducer)
+			def obj2=new Measure(time,measure,reducer)
+			
+		then:
+			obj1.equals(obj2)
+			obj2.equals(obj1)
+			
+		where:
+			time						| measure					| reducer							| type				
+			LocalDateTime.now()			| Duration.ofSeconds(10)	| MeasureReducers.DURATION.get()	| Duration.class	
+			LocalDateTime.now()			| null						| MeasureReducers.DURATION.get()	| Duration.class	
+			null						| Duration.ofHours(10)		| MeasureReducers.DURATION.get()	| Duration.class	
+			LocalDateTime.now()			| 10l						| MeasureReducers.LONG.get()		| Long.class		
+			LocalDateTime.now()			| null						| MeasureReducers.LONG.get()		| Long.class		
+			null						| -111l						| MeasureReducers.LONG.get()		| Long.class		
+			LocalDateTime.now()			| 10.2d						| MeasureReducers.DOUBLE.get()		| Double.class		
+			LocalDateTime.now()			| null						| MeasureReducers.DOUBLE.get()		| Double.class		
+			null						| -2.8d						| MeasureReducers.DOUBLE.get()		| Double.class		
+			null						| null						| MeasureReducers.DURATION.get()	| Double.class		
+	}	
 }
 

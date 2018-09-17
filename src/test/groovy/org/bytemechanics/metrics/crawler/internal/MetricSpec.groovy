@@ -170,10 +170,12 @@ class MetricSpec extends Specification{
 		println(">>>>> MetricSpec >>>> When Metric $metric1 is compared with $metric2 with equals the result should be $expected")
 
 		when:
-			def actual=metric1.equals(metric2)
-			
+			def forward=metric1.equals(metric2)
+			def reverse=metric2.equals(metric1)
+		
 		then:
-			actual==expected
+			forward==expected
+			reverse==expected
 			
 		where:
 			metric1												| metric2											| expected							
@@ -258,7 +260,17 @@ class MetricSpec extends Specification{
 			metric.addMeasure(LocalDateTime.of(3,3,3,3,3),3.0d)
 			metric.addMeasure(LocalDateTime.of(4,4,4,4,4),4.0d)
 			metric.addMeasure(LocalDateTime.of(5,5,5,5,5),5.0d)
-			def expected=new MetricSnapshot(MeasureReducers.DOUBLE.get(),"mNAme",12.0d,3,5,5.0d,3.0d,4.0d,5.0d,LocalDateTime.of(5,5,5,5,5))
+			def expected=MetricSnapshot.builder(MeasureReducers.DOUBLE.get())
+											.name("mNAme")
+											.samplingSize(3)
+											.accumulatedSamples(12.0d)
+											.totalHits(5)
+											.maxMeasure(5.0d)
+											.minMeasure(3.0d)
+											.averageMeasure(4.0d)
+											.lastMeasure(5.0d)
+											.lastOccurrence(LocalDateTime.of(5,5,5,5,5))
+										.build();
 
 		expect:
 			metric.toSnapshot()==expected
@@ -275,7 +287,17 @@ class MetricSpec extends Specification{
 			metric.addMeasure(LocalDateTime.of(3,3,3,3,3),3l)
 			metric.addMeasure(LocalDateTime.of(4,4,4,4,4),4l)
 			metric.addMeasure(LocalDateTime.of(5,5,5,5,5),5l)
-			def expected=new MetricSnapshot(MeasureReducers.LONG.get(),"mNAme",12l,3,5,5l,3l,4l,5l,LocalDateTime.of(5,5,5,5,5))
+			def expected=MetricSnapshot.builder(MeasureReducers.LONG.get())
+											.name("mNAme")
+											.samplingSize(3)
+											.accumulatedSamples(12l)
+											.totalHits(5l)
+											.maxMeasure(5l)
+											.minMeasure(3l)
+											.averageMeasure(4l)
+											.lastMeasure(5l)
+											.lastOccurrence(LocalDateTime.of(5,5,5,5,5))
+										.build();
 
 		expect:
 			metric.toSnapshot()==expected
@@ -292,7 +314,17 @@ class MetricSpec extends Specification{
 			metric.addMeasure(LocalDateTime.of(3,3,3,3,3),Duration.ofSeconds(3))
 			metric.addMeasure(LocalDateTime.of(4,4,4,4,4),Duration.ofSeconds(4))
 			metric.addMeasure(LocalDateTime.of(5,5,5,5,5),Duration.ofSeconds(5))
-			def expected=new MetricSnapshot(MeasureReducers.DURATION.get(),"mNAme",Duration.ofSeconds(12),3,5,Duration.ofSeconds(5),Duration.ofSeconds(3),Duration.ofSeconds(4),Duration.ofSeconds(5),LocalDateTime.of(5,5,5,5,5))
+			def expected=MetricSnapshot.builder(MeasureReducers.DURATION.get())
+											.name("mNAme")
+											.samplingSize(3)
+											.accumulatedSamples(Duration.ofSeconds(12))
+											.totalHits(5l)
+											.maxMeasure(Duration.ofSeconds(5))
+											.minMeasure(Duration.ofSeconds(3))
+											.averageMeasure(Duration.ofSeconds(4))
+											.lastMeasure(Duration.ofSeconds(5))
+											.lastOccurrence(LocalDateTime.of(5,5,5,5,5))
+										.build();
 
 		expect:
 			metric.toSnapshot()==expected

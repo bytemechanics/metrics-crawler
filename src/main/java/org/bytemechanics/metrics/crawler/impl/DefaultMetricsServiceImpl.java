@@ -50,7 +50,7 @@ public class DefaultMetricsServiceImpl implements MetricsService {
 		return this.metrics.values()
 								.stream()
 									.map(Metric::toSnapshot)
-									.sorted()
+									.sorted(MetricSnapshot::compareNames)
 									.collect(Collectors.toList());
 	}
 }

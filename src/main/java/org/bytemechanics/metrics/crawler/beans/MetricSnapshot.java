@@ -1,6 +1,8 @@
 package org.bytemechanics.metrics.crawler.beans;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
+import java.util.Optional;
 import org.bytemechanics.metrics.crawler.MeasureReducer;
 import org.bytemechanics.metrics.crawler.internal.commons.string.SimpleFormat;
 
@@ -8,12 +10,12 @@ import org.bytemechanics.metrics.crawler.internal.commons.string.SimpleFormat;
  * @author E103880
  * @param <TYPE>
  */
-public class MetricSnapshot<TYPE> implements Comparable<MetricSnapshot>{
+public class MetricSnapshot<TYPE>{
 
 	private final MeasureReducer<TYPE> measureReducer;
 
 	private final String name;
-	private final TYPE samplingAccumulatedMeasure;
+	private final TYPE accumulatedSamples;
 	private final long samplingSize;
 	private final long totalHits;
 	private final TYPE maxMeasure;
@@ -23,12 +25,12 @@ public class MetricSnapshot<TYPE> implements Comparable<MetricSnapshot>{
 	private final LocalDateTime lastOccurrence;
 
 	
-	public MetricSnapshot(final MeasureReducer<TYPE> _measureReducer,final String _name,final TYPE _accumulated,final long _hits,final long _globalHits,final TYPE _maxMeasure,final TYPE _minMeasure,final TYPE _averageMeasure,final TYPE _lastMeasure,final LocalDateTime _lastOccurrence) {
+	protected MetricSnapshot(final MeasureReducer<TYPE> _measureReducer,final String _name,final TYPE _accumulatedSamples,final long _samplingSize,final long _totalHits,final TYPE _maxMeasure,final TYPE _minMeasure,final TYPE _averageMeasure,final TYPE _lastMeasure,final LocalDateTime _lastOccurrence) {
 		this.measureReducer=_measureReducer;
 		this.name = _name;
-		this.samplingAccumulatedMeasure = _accumulated;
-		this.samplingSize = _hits;
-		this.totalHits = _globalHits;
+		this.accumulatedSamples = _accumulatedSamples;
+		this.samplingSize = _samplingSize;
+		this.totalHits = _totalHits;
 		this.maxMeasure = _maxMeasure;
 		this.minMeasure = _minMeasure;
 		this.averageMeasure=_averageMeasure;
@@ -40,11 +42,11 @@ public class MetricSnapshot<TYPE> implements Comparable<MetricSnapshot>{
 	public String getName() {
 		return name;
 	}
-	public TYPE getSamplingAccumulatedMeasure() {
-		return samplingAccumulatedMeasure;
+	public TYPE getAccumulatedSamples() {
+		return accumulatedSamples;
 	}
-	public String getFormatedSamplingAccumulatedMeasure() {
-		return this.measureReducer.toString(samplingAccumulatedMeasure);
+	public String getFormatedAccumulatedSamples() {
+		return this.measureReducer.toString(accumulatedSamples);
 	}
 	public long getSamplingSize() {
 		return samplingSize;
@@ -70,13 +72,13 @@ public class MetricSnapshot<TYPE> implements Comparable<MetricSnapshot>{
 	public String getFormatedAverageMeasure() {
 		return this.measureReducer.toString(averageMeasure);
 	}
-	public TYPE getLatestMeasure() {
+	public TYPE getLastMeasure() {
 		return lastMeasure;
 	}
-	public String getFormatedLatestMeasure() {
+	public String getFormatedLastMeasure() {
 		return this.measureReducer.toString(lastMeasure);
 	}
-	public LocalDateTime getTimestamp() {
+	public LocalDateTime getLastOccurrence() {
 		return lastOccurrence;
 	}
 	
@@ -85,43 +87,90 @@ public class MetricSnapshot<TYPE> implements Comparable<MetricSnapshot>{
 
 		return MetricSnapshot.builder(this.measureReducer)
 						.name(this.name)
-						.samplingAccumulatedMeasure(this.measureReducer.accumulate(this.samplingAccumulatedMeasure, _metric.samplingAccumulatedMeasure)
-																		.orElse(this.measureReducer.identity()))
+						.accumulatedSamples(this.measureReducer.accumulate(this.accumulatedSamples, _metric.accumulatedSamples)
+																		.orElseGet(this.measureReducer::identity))
 						.samplingSize(this.samplingSize+_metric.samplingSize)
 						.totalHits(this.totalHits+_metric.totalHits)
 						.maxMeasure(this.measureReducer.max(this.maxMeasure,_metric.maxMeasure)
-														.orElse(this.measureReducer.identity()))
+														.orElseGet(this.measureReducer::identity))
 						.minMeasure(this.measureReducer.min(this.minMeasure,_metric.minMeasure)
-														.orElse(this.measureReducer.identity()))
-						.averageMeasure(this.measureReducer.min(this.averageMeasure,_metric.minMeasure)
-															.orElse(this.measureReducer.identity()))
+														.orElseGet(this.measureReducer::identity))
+						.averageMeasure(this.measureReducer.accumulate(this.averageMeasure, _metric.averageMeasure)
+															.flatMap(total -> this.measureReducer.average(total,2l))
+															.orElseGet(this.measureReducer::identity))
 						.lastMeasure((this.lastOccurrence.isBefore(_metric.lastOccurrence))? _metric.lastMeasure : this.lastMeasure)
 						.lastOccurrence((this.lastOccurrence.isBefore(_metric.lastOccurrence))? _metric.lastOccurrence : this.lastOccurrence)
 					.build();
 	}
 
-	
 	@Override
-	public int compareTo(final MetricSnapshot _metric) {
-		if(_metric==null)
-			return -1;
-		if(this.name==null)
-			return 1;
-		return this.name.compareTo(_metric.name);
+	public int hashCode() {
+		int hash = 7;
+		hash = 89 * hash + Objects.hashCode(this.measureReducer);
+		hash = 89 * hash + Objects.hashCode(this.name);
+		hash = 89 * hash + Objects.hashCode(this.accumulatedSamples);
+		hash = 89 * hash + (int) (this.samplingSize ^ (this.samplingSize >>> 32));
+		hash = 89 * hash + (int) (this.totalHits ^ (this.totalHits >>> 32));
+		hash = 89 * hash + Objects.hashCode(this.maxMeasure);
+		hash = 89 * hash + Objects.hashCode(this.minMeasure);
+		hash = 89 * hash + Objects.hashCode(this.averageMeasure);
+		hash = 89 * hash + Objects.hashCode(this.lastMeasure);
+		hash = 89 * hash + Objects.hashCode(this.lastOccurrence);
+		return hash;
 	}
-
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null) {
+			return false;
+		}
+		if (getClass() != obj.getClass()) {
+			return false;
+		}
+		final MetricSnapshot<?> other = (MetricSnapshot<?>) obj;
+		if (this.samplingSize != other.samplingSize) {
+			return false;
+		}
+		if (this.totalHits != other.totalHits) {
+			return false;
+		}
+		if (!Objects.equals(this.name, other.name)) {
+			return false;
+		}
+		if (!Objects.equals(this.measureReducer, other.measureReducer)) {
+			return false;
+		}
+		if (!Objects.equals(this.accumulatedSamples, other.accumulatedSamples)) {
+			return false;
+		}
+		if (!Objects.equals(this.maxMeasure, other.maxMeasure)) {
+			return false;
+		}
+		if (!Objects.equals(this.minMeasure, other.minMeasure)) {
+			return false;
+		}
+		if (!Objects.equals(this.averageMeasure, other.averageMeasure)) {
+			return false;
+		}
+		if (!Objects.equals(this.lastMeasure, other.lastMeasure)) {
+			return false;
+		}
+		return Objects.equals(this.lastOccurrence, other.lastOccurrence);
+	}
 
 	@Override
 	public String toString() {
-		return SimpleFormat.format("MetricSnapshot[name={}, samplingAccumulatedMeasure={}, samplingSize={}, totalHits={}, maxMeasure={}, minMeasure={}, averageMeasure={}, lastMeasure={}, lastOccurrence={}"
-											,name, samplingAccumulatedMeasure, samplingSize, totalHits, maxMeasure, minMeasure, averageMeasure, lastMeasure, lastOccurrence);
+		return SimpleFormat.format("MetricSnapshot[measureReducer={}, name={}, accumulatedSamples={}, samplingSize={}, totalHits={}, maxMeasure={}, minMeasure={}, averageMeasure={}, lastMeasure={}, lastOccurrence={}"
+											, measureReducer , name, accumulatedSamples, samplingSize, totalHits, maxMeasure, minMeasure, averageMeasure, lastMeasure, lastOccurrence);
 	}
 	
 	public static class MetricBuilder<TYPE> {
 		
 		private final MeasureReducer<TYPE> measureReducer;
 		private String name;
-		private TYPE samplingAccumulatedMeasure;
+		private TYPE accumulatedSamples;
 		private long samplingSize;
 		private long totalHits;
 		private TYPE maxMeasure;
@@ -133,7 +182,7 @@ public class MetricSnapshot<TYPE> implements Comparable<MetricSnapshot>{
 		public MetricBuilder(final MeasureReducer<TYPE> _measureReducer) {
 			this.measureReducer=_measureReducer;
 			this.name=null;
-			this.samplingAccumulatedMeasure=this.measureReducer.identity();
+			this.accumulatedSamples=this.measureReducer.identity();
 			this.samplingSize=0l;
 			this.totalHits=0l;
 			this.maxMeasure=this.measureReducer.identity();
@@ -145,14 +194,14 @@ public class MetricSnapshot<TYPE> implements Comparable<MetricSnapshot>{
 		public MetricBuilder(final MeasureReducer<TYPE> _measureReducer,final MetricSnapshot<TYPE> _metricSnapshot) {
 			this.measureReducer=_measureReducer;
 			this.name = _metricSnapshot.getName();
-			this.samplingAccumulatedMeasure = _metricSnapshot.getSamplingAccumulatedMeasure();
+			this.accumulatedSamples = _metricSnapshot.getAccumulatedSamples();
 			this.samplingSize = _metricSnapshot.getSamplingSize();
 			this.totalHits = _metricSnapshot.getTotalHits();
 			this.maxMeasure = _metricSnapshot.getMaxMeasure();
 			this.minMeasure = _metricSnapshot.getMinMeasure();
 			this.averageMeasure=_metricSnapshot.getAverageMeasure();
-			this.lastMeasure = _metricSnapshot.getLatestMeasure();
-			this.lastOccurrence = _metricSnapshot.getTimestamp();
+			this.lastMeasure = _metricSnapshot.getLastMeasure();
+			this.lastOccurrence = _metricSnapshot.getLastOccurrence();
 		}
 		
 		
@@ -160,8 +209,8 @@ public class MetricSnapshot<TYPE> implements Comparable<MetricSnapshot>{
 			this.name = _name;
 			return this;
 		}
-		public MetricBuilder samplingAccumulatedMeasure(final TYPE _samplingAccumulatedMeasure) {
-			this.samplingAccumulatedMeasure = _samplingAccumulatedMeasure;
+		public MetricBuilder accumulatedSamples(final TYPE _accumulatedSamples) {
+			this.accumulatedSamples = _accumulatedSamples;
 			return this;
 		}
 		public MetricBuilder samplingSize(final long _samplingSize) {
@@ -193,7 +242,7 @@ public class MetricSnapshot<TYPE> implements Comparable<MetricSnapshot>{
 			return this;
 		}
 		public MetricSnapshot build() {
-			return new MetricSnapshot<>(this.measureReducer,name, samplingAccumulatedMeasure, samplingSize, totalHits, maxMeasure, minMeasure,averageMeasure, lastMeasure, lastOccurrence);
+			return new MetricSnapshot<>(this.measureReducer,name, accumulatedSamples, samplingSize, totalHits, maxMeasure, minMeasure,averageMeasure, lastMeasure, lastOccurrence);
 		}
 	}
 
@@ -203,5 +252,17 @@ public class MetricSnapshot<TYPE> implements Comparable<MetricSnapshot>{
 	}	
 	public static <T> MetricBuilder builder(final MeasureReducer<T> _measureReducer,final MetricSnapshot<T> _metricSnapshot) {
 		return new MetricBuilder(_measureReducer,_metricSnapshot);
+	}	
+	public static int compareNames(final MetricSnapshot _metric1,final MetricSnapshot _metric2) {
+		return Optional.ofNullable(_metric1)
+						.map(MetricSnapshot::getName)
+						.map(leftName -> Optional.ofNullable(_metric2)
+												.map(MetricSnapshot::getName)
+												.map(rightName -> leftName.compareTo(rightName))
+												.orElse(1))
+						.orElseGet(() -> Optional.ofNullable(_metric2)
+												.map(MetricSnapshot::getName)
+												.map(metric -> -1)
+												.orElse(0));
 	}	
 }

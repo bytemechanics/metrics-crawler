@@ -50,7 +50,11 @@ public class Measure<TYPE> {
 	public MetricSnapshot toMetricSnapshot(){
 		return MetricSnapshot.builder(this.reducer)
 								.samplingSize(1)
-								.samplingAccumulatedMeasure(this.measure)
+								.accumulatedSamples(this.measure)
+								.maxMeasure(this.measure)
+								.minMeasure(this.measure)
+								.averageMeasure(this.measure)
+								.lastMeasure(this.measure)
 								.lastOccurrence(this.timestamp)
 							.build();
 	}
