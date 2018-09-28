@@ -16,7 +16,7 @@ import org.bytemechanics.metrics.crawler.internal.Metric;
  */
 public class DefaultMetricsServiceImpl implements MetricsService {
 
-	private static final int DEFAULT_SAMPLING_SIZE=128;
+	public static final int DEFAULT_SAMPLING_SIZE=128;
 
 	private final int samplingSize;
 	private final Map<String,Metric> metrics;
@@ -29,20 +29,25 @@ public class DefaultMetricsServiceImpl implements MetricsService {
 		this.metrics=new ConcurrentHashMap<>(64);
 		this.samplingSize=_samplingSize;
 	}
-
+	
+	
+	@Override
+	public int getSamplingSize(){
+		return this.samplingSize;
+	}
+	
+	@Override
+	public <TYPE> void registerMeasure(final String _name,final LocalDateTime _time,final TYPE _measure,final MeasureReducer<TYPE> _reducer,final Object... _placeholders){
+		Optional.ofNullable(buildMetricName(_name,_placeholders))
+					.map(effectiveName -> this.metrics.computeIfAbsent(effectiveName,name -> new Metric(name, this.samplingSize,_reducer)))
+					.ifPresent(metric -> metric.addMeasure(_time, _measure));
+	}
 	
 	@Override
 	public Optional<MetricSnapshot> getMetric(String _measure,final Object... _placeholders) {
 		return Optional.ofNullable(buildMetricName(_measure,_placeholders))
 							.map(this.metrics::get)
 							.map(Metric::toSnapshot);
-	}
-
-	
-	@Override
-	public <TYPE> void registerMeasure(final String _name,final LocalDateTime _time,final TYPE _measure,final MeasureReducer<TYPE> _reducer){
-		this.metrics.computeIfAbsent(_name,name -> new Metric(name, this.samplingSize,_reducer))
-					.addMeasure(_time, _measure);
 	}
 
 	@Override

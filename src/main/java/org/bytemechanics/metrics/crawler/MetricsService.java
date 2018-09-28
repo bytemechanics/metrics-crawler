@@ -14,10 +14,12 @@ public interface MetricsService {
 	public default String buildMetricName(final String _name,final Object... _args){
 		return (_args.length>0)? SimpleFormat.format(_name, _args) : String.valueOf(_name);
 	}
+	
+	public int getSamplingSize();
 
 	public Optional<MetricSnapshot> getMetric(final String _measure,final Object... _placeholders);
 
-	public <TYPE> void registerMeasure(final String _name,final LocalDateTime _time,final TYPE _measure,final MeasureReducer<TYPE> _reducer);
+	public <TYPE> void registerMeasure(final String _name,final LocalDateTime _time,final TYPE _measure,final MeasureReducer<TYPE> _reducer,final Object... _placeholders);
 	
 	public List<MetricSnapshot> getMetrics();
 }
