@@ -12,7 +12,10 @@ import org.bytemechanics.metrics.crawler.beans.MetricSnapshot;
 import org.bytemechanics.metrics.crawler.internal.Metric;
 
 /**
- * @author e103880
+ * Default Metrics service implementation
+ * @see MetricsService
+ * @author afarre
+ * @since 1.0.0
  */
 public class DefaultMetricsServiceImpl implements MetricsService {
 
@@ -31,11 +34,13 @@ public class DefaultMetricsServiceImpl implements MetricsService {
 	}
 	
 	
+	/** @see MetricsService#getSamplingSize()  */
 	@Override
 	public int getSamplingSize(){
 		return this.samplingSize;
 	}
 	
+	/** @see MetricsService#registerMeasure(java.lang.String, java.time.LocalDateTime, java.lang.Object, org.bytemechanics.metrics.crawler.MeasureReducer, java.lang.Object...)  */
 	@Override
 	public <TYPE> void registerMeasure(final String _name,final LocalDateTime _time,final TYPE _measure,final MeasureReducer<TYPE> _reducer,final Object... _placeholders){
 		Optional.ofNullable(buildMetricName(_name,_placeholders))
@@ -43,6 +48,7 @@ public class DefaultMetricsServiceImpl implements MetricsService {
 					.ifPresent(metric -> metric.addMeasure(_time, _measure));
 	}
 	
+	/** @see MetricsService#getMetric(java.lang.String, java.lang.Object...)  */
 	@Override
 	public Optional<MetricSnapshot> getMetric(String _measure,final Object... _placeholders) {
 		return Optional.ofNullable(buildMetricName(_measure,_placeholders))
@@ -50,6 +56,7 @@ public class DefaultMetricsServiceImpl implements MetricsService {
 							.map(Metric::toSnapshot);
 	}
 
+	/** @see MetricsService#getMetrics()  */
 	@Override
 	public List<MetricSnapshot> getMetrics(){
 		return this.metrics.values()
@@ -57,5 +64,11 @@ public class DefaultMetricsServiceImpl implements MetricsService {
 									.map(Metric::toSnapshot)
 									.sorted(MetricSnapshot::compareNames)
 									.collect(Collectors.toList());
+	}
+
+	/** @see MetricsService#clear()  */
+	@Override
+	public void clear() {
+		this.metrics.clear();
 	}
 }

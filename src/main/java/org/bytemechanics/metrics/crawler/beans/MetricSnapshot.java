@@ -7,9 +7,12 @@ import org.bytemechanics.metrics.crawler.MeasureReducer;
 import org.bytemechanics.metrics.crawler.internal.commons.string.SimpleFormat;
 
 /**
- * @author E103880
- * @param <TYPE>
- */
+ * Object to represent the metric statistics in a certain moment
+ * @author afarre
+ * @param <TYPE> Type of the metric
+ * @see MeasureReducer
+ * @since 1.0.0
+*/
 public class MetricSnapshot<TYPE>{
 
 	private final MeasureReducer<TYPE> measureReducer;
@@ -23,6 +26,7 @@ public class MetricSnapshot<TYPE>{
 	private final TYPE averageMeasure;
 	private final TYPE lastMeasure;
 	private final LocalDateTime lastOccurrence;
+	private final LocalDateTime snapshotTimestamp;
 
 	
 	protected MetricSnapshot(final MeasureReducer<TYPE> _measureReducer,final String _name,final TYPE _accumulatedSamples,final long _samplingSize,final long _totalHits,final TYPE _maxMeasure,final TYPE _minMeasure,final TYPE _averageMeasure,final TYPE _lastMeasure,final LocalDateTime _lastOccurrence) {
@@ -36,53 +40,123 @@ public class MetricSnapshot<TYPE>{
 		this.averageMeasure=_averageMeasure;
 		this.lastMeasure = _lastMeasure;
 		this.lastOccurrence = _lastOccurrence;
+		this.snapshotTimestamp=LocalDateTime.now();
 	}
 	
 
+	/**
+	 * Retrieve the metric snapshot name
+	 * @return metric snapshot name
+	 */
 	public String getName() {
 		return name;
 	}
+	/**
+	 * Retrieve the metric snapshot accumulated measures
+	 * @return metric snapshot accumulated measures
+	 */
 	public TYPE getAccumulatedSamples() {
 		return accumulatedSamples;
 	}
+	/**
+	 * Retrieve the metric snapshot accumulated measures formatted to string
+	 * @return metric snapshot accumulated measures formatted to string
+	 */
 	public String getFormatedAccumulatedSamples() {
 		return this.measureReducer.toString(accumulatedSamples);
 	}
+	/**
+	 * Retrieve the metric snapshot total number of samples taken in account to create this statistics
+	 * @return metric snapshot total number of samples taken in account to create this statistics
+	 */
 	public long getSamplingSize() {
 		return samplingSize;
 	}
+	/**
+	 * Retrieve the metric snapshot total number of measures taken
+	 * @return metric snapshot total number of measures taken
+	 */
 	public long getTotalHits() {
 		return totalHits;
 	}
+	/**
+	 * Retrieve the metric snapshot max measure
+	 * @return metric snapshot max measure
+	 */
 	public TYPE getMaxMeasure() {
 		return maxMeasure;
 	}
+	/**
+	 * Retrieve the metric snapshot max measure formatted to string
+	 * @return metric snapshot max measure formatted to string
+	 */
 	public String getFormatedMaxMeasure() {
 		return this.measureReducer.toString(maxMeasure);
 	}
+	/**
+	 * Retrieve the metric snapshot min measure 
+	 * @return metric snapshot min measure
+	 */
 	public TYPE getMinMeasure() {
 		return minMeasure;
 	}
+	/**
+	 * Retrieve the metric snapshot min measure formatted to string
+	 * @return metric snapshot min measure formatted to string
+	 */
 	public String getFormatedMinMeasure() {
 		return this.measureReducer.toString(minMeasure);
 	}
+	/**
+	 * Retrieve the metric snapshot average measure
+	 * @return metric snapshot average measure 
+	 */
 	public TYPE getAverageMeasure() {
 		return averageMeasure;
 	}
+	/**
+	 * Retrieve the metric snapshot average measure formatted to string
+	 * @return metric snapshot average measure formatted to string
+	 */
 	public String getFormatedAverageMeasure() {
 		return this.measureReducer.toString(averageMeasure);
 	}
+	/**
+	 * Retrieve the metric snapshot last measure
+	 * @return metric snapshot last measure 
+	 */
 	public TYPE getLastMeasure() {
 		return lastMeasure;
 	}
+	/**
+	 * Retrieve the metric snapshot last measure formatted to string
+	 * @return metric snapshot last measure formatted to string
+	 */
 	public String getFormatedLastMeasure() {
 		return this.measureReducer.toString(lastMeasure);
 	}
+	/**
+	 * Retrieve the metric snapshot last occurrence
+	 * @return metric snapshot last occurrence
+	 */
 	public LocalDateTime getLastOccurrence() {
 		return lastOccurrence;
 	}
+	/**
+	 * Retrieve the metric snapshot generation timestamp
+	 * @return metric snapshot generation timestamp
+	 */
+	public LocalDateTime getSnapshotTimestamp() {
+		return snapshotTimestamp;
+	}
 	
 	
+	/**
+	 * Perfom a reduction with the given _metric using the measure reducer
+	 * @param _metric metric snapshot to reduce with
+	 * @return reduced metric snapshot
+	 * @see MeasureReducer
+	 */
 	public MetricSnapshot<TYPE> reduce(final MetricSnapshot<TYPE> _metric) {
 
 		return MetricSnapshot.builder(this.measureReducer)
@@ -102,7 +176,8 @@ public class MetricSnapshot<TYPE>{
 						.lastOccurrence((this.lastOccurrence.isBefore(_metric.lastOccurrence))? _metric.lastOccurrence : this.lastOccurrence)
 					.build();
 	}
-
+	
+	/** @see Object#hashCode()  */
 	@Override
 	public int hashCode() {
 		int hash = 7;
@@ -118,6 +193,8 @@ public class MetricSnapshot<TYPE>{
 		hash = 89 * hash + Objects.hashCode(this.lastOccurrence);
 		return hash;
 	}
+
+	/** @see Object#equals(java.lang.Object)  */
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj) {
@@ -160,13 +237,18 @@ public class MetricSnapshot<TYPE>{
 		return Objects.equals(this.lastOccurrence, other.lastOccurrence);
 	}
 
+	/** @see Object#toString() */
 	@Override
 	public String toString() {
 		return SimpleFormat.format("MetricSnapshot[measureReducer={}, name={}, accumulatedSamples={}, samplingSize={}, totalHits={}, maxMeasure={}, minMeasure={}, averageMeasure={}, lastMeasure={}, lastOccurrence={}"
 											, measureReducer , name, accumulatedSamples, samplingSize, totalHits, maxMeasure, minMeasure, averageMeasure, lastMeasure, lastOccurrence);
 	}
 	
-	public static class MetricBuilder<TYPE> {
+	/**
+	 * Metric builder to perform more semantic development
+	 * @param <TYPE> type of the metricSnapshot to create
+	 */
+	public static class MetricSnapshotBuilder<TYPE> {
 		
 		private final MeasureReducer<TYPE> measureReducer;
 		private String name;
@@ -179,7 +261,11 @@ public class MetricSnapshot<TYPE>{
 		private TYPE averageMeasure;
 		private LocalDateTime lastOccurrence;
 
-		public MetricBuilder(final MeasureReducer<TYPE> _measureReducer) {
+		/**
+		 * Creates a metric snapshot builder from the given _measureReducer
+		 * @param _measureReducer measure reducer for this metric snapshot builder
+		 */
+		public MetricSnapshotBuilder(final MeasureReducer<TYPE> _measureReducer) {
 			this.measureReducer=_measureReducer;
 			this.name=null;
 			this.accumulatedSamples=this.measureReducer.identity();
@@ -191,7 +277,12 @@ public class MetricSnapshot<TYPE>{
 			this.lastMeasure=this.measureReducer.identity();
 			this.lastOccurrence=null;
 		}
-		public MetricBuilder(final MeasureReducer<TYPE> _measureReducer,final MetricSnapshot<TYPE> _metricSnapshot) {
+		/**
+		 * Creates a metric snapshot clone with this_measureReducer
+		 * @param _measureReducer measure reducer for this metric snapshot builder
+		 * @param _metricSnapshot original metric snapshot to clone
+		 */
+		public MetricSnapshotBuilder(final MeasureReducer<TYPE> _measureReducer,final MetricSnapshot<TYPE> _metricSnapshot) {
 			this.measureReducer=_measureReducer;
 			this.name = _metricSnapshot.getName();
 			this.accumulatedSamples = _metricSnapshot.getAccumulatedSamples();
@@ -205,53 +296,116 @@ public class MetricSnapshot<TYPE>{
 		}
 		
 		
-		public MetricBuilder name(final String _name) {
+		/**
+		 * sets the name and return the current builder instance
+		 * @param _name name to set
+		 * @return current builder instance
+		 */
+		public MetricSnapshotBuilder name(final String _name) {
 			this.name = _name;
 			return this;
 		}
-		public MetricBuilder accumulatedSamples(final TYPE _accumulatedSamples) {
+		/**
+		 * sets the accumulatedSamples and return the current builder instance
+		 * @param _accumulatedSamples accumulatedSamples to set
+		 * @return current builder instance
+		 */
+		public MetricSnapshotBuilder accumulatedSamples(final TYPE _accumulatedSamples) {
 			this.accumulatedSamples = _accumulatedSamples;
 			return this;
 		}
-		public MetricBuilder samplingSize(final long _samplingSize) {
+		/**
+		 * sets the samplingSize and return the current builder instance
+		 * @param _samplingSize samplingSize to set
+		 * @return current builder instance
+		 */
+		public MetricSnapshotBuilder samplingSize(final long _samplingSize) {
 			this.samplingSize = _samplingSize;
 			return this;
 		}
-		public MetricBuilder totalHits(final long _totalHits) {
+		/**
+		 * sets the totalHits and return the current builder instance
+		 * @param _totalHits totalHits to set
+		 * @return current builder instance
+		 */
+		public MetricSnapshotBuilder totalHits(final long _totalHits) {
 			this.totalHits = _totalHits;
 			return this;
 		}
-		public MetricBuilder maxMeasure(final TYPE _maxMeasure) {
+		/**
+		 * sets the maxMeasure and return the current builder instance
+		 * @param _maxMeasure maxMeasure to set
+		 * @return current builder instance
+		 */
+		public MetricSnapshotBuilder maxMeasure(final TYPE _maxMeasure) {
 			this.maxMeasure = _maxMeasure;
 			return this;
 		}
-		public MetricBuilder minMeasure(final TYPE _minMeasure) {
+		/**
+		 * sets the minMeasure and return the current builder instance
+		 * @param _minMeasure minMeasure to set
+		 * @return current builder instance
+		 */
+		public MetricSnapshotBuilder minMeasure(final TYPE _minMeasure) {
 			this.minMeasure = _minMeasure;
 			return this;
 		}
-		public MetricBuilder averageMeasure(final TYPE _averageMeasure) {
+		/**
+		 * sets the averageMeasure and return the current builder instance
+		 * @param _averageMeasure averageMeasure to set
+		 * @return current builder instance
+		 */
+		public MetricSnapshotBuilder averageMeasure(final TYPE _averageMeasure) {
 			this.averageMeasure = _averageMeasure;
 			return this;
 		}
-		public MetricBuilder lastMeasure(final TYPE _lastMeasure) {
+		/**
+		 * sets the lastMeasure and return the current builder instance
+		 * @param _lastMeasure lastMeasure to set
+		 * @return current builder instance
+		 */
+		public MetricSnapshotBuilder lastMeasure(final TYPE _lastMeasure) {
 			this.lastMeasure = _lastMeasure;
 			return this;
 		}
-		public MetricBuilder lastOccurrence(final LocalDateTime _lastOccurrence) {
+		/**
+		 * sets the lastOccurrence and return the current builder instance
+		 * @param _lastOccurrence lastOccurrence to set
+		 * @return current builder instance
+		 */
+		public MetricSnapshotBuilder lastOccurrence(final LocalDateTime _lastOccurrence) {
 			this.lastOccurrence = _lastOccurrence;
 			return this;
 		}
+
+		/**
+		 * Builds the actual metric snaphot represented by this builder
+		 * @return new metric snapshot instance
+		 */
 		public MetricSnapshot build() {
 			return new MetricSnapshot<>(this.measureReducer,name, accumulatedSamples, samplingSize, totalHits, maxMeasure, minMeasure,averageMeasure, lastMeasure, lastOccurrence);
 		}
 	}
 
+	/**
+	 * Retrieves a new MetricSnapshotBuilder with the given _measureReducer
+	 * @param <T> Type of the metric to create
+	 * @param _measureReducer measure reducer to use to create the new builder
+	 * @return new MetricSnapshotBuilder
+	 */
 	@java.lang.SuppressWarnings("all")
-	public static <T> MetricBuilder builder(final MeasureReducer<T> _measureReducer) {
-		return new MetricBuilder(_measureReducer);
+	public static <T> MetricSnapshotBuilder builder(final MeasureReducer<T> _measureReducer) {
+		return new MetricSnapshotBuilder(_measureReducer);
 	}	
-	public static <T> MetricBuilder builder(final MeasureReducer<T> _measureReducer,final MetricSnapshot<T> _metricSnapshot) {
-		return new MetricBuilder(_measureReducer,_metricSnapshot);
+	/**
+	 * Retrieves a new MetricSnapshotBuilder that clones the given _metricSnapshot
+	 * @param <T> Type of the metric to create
+	 * @param _measureReducer measure reducer to use to create the new builder
+	 * @param _metricSnapshot metric snapshot to clone
+	 * @return new MetricSnapshotBuilder
+	 */
+	public static <T> MetricSnapshotBuilder builder(final MeasureReducer<T> _measureReducer,final MetricSnapshot<T> _metricSnapshot) {
+		return new MetricSnapshotBuilder(_measureReducer,_metricSnapshot);
 	}	
 	public static int compareNames(final MetricSnapshot _metric1,final MetricSnapshot _metric2) {
 		return Optional.ofNullable(_metric1)

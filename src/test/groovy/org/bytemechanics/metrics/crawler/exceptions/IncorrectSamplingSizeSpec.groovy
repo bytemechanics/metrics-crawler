@@ -85,8 +85,8 @@ class IncorrectSamplingSizeSpec extends Specification{
 	}
 
 	@Unroll
-	def "Two instance of IncorrectSamplingSize with the same metricName:#metricName and samplingSize:#samplingSize must have the same hashcode"(){
-		println(">>>>> IncorrectSamplingSizeSpec >>>> Two instance of IncorrectSamplingSize with the same metricName:$metricName and samplingSize:$samplingSize must have the same hashcode")
+	def "Two instances of IncorrectSamplingSize with the same metricName:#metricName and samplingSize:#samplingSize must have the same hashcode"(){
+		println(">>>>> IncorrectSamplingSizeSpec >>>> Two instances of IncorrectSamplingSize with the same metricName:$metricName and samplingSize:$samplingSize must have the same hashcode")
 
 		given:
 			def exception1=new IncorrectSamplingSize(metricName,samplingSize)
@@ -106,8 +106,8 @@ class IncorrectSamplingSizeSpec extends Specification{
 	}
 
 	@Unroll
-	def "Two instance of IncorrectSamplingSize with the same metricName:#metricName and samplingSize:#samplingSize must be equals()"(){
-		println(">>>>> IncorrectSamplingSizeSpec >>>> Two instance of IncorrectSamplingSize with the same metricName:$metricName and samplingSize:$samplingSize must be equals()")
+	def "Two instances of IncorrectSamplingSize with the same metricName:#metricName and samplingSize:#samplingSize must be equals()"(){
+		println(">>>>> IncorrectSamplingSizeSpec >>>> Two instances of IncorrectSamplingSize with the same metricName:$metricName and samplingSize:$samplingSize must be equals()")
 
 		given:
 			def exception1=new IncorrectSamplingSize(metricName,samplingSize)

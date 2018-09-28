@@ -24,6 +24,7 @@ import java.time.Duration
 import java.text.NumberFormat
 import java.time.LocalDateTime
 import org.bytemechanics.metrics.crawler.internal.*
+import org.bytemechanics.metrics.crawler.exceptions.*
 
 /**
  *
@@ -152,6 +153,57 @@ class DefaultMetricsServiceImplSpec extends Specification{
 			actualList.get(1).getAccumulatedSamples()==4.0d
 			actualList.get(2).getName()=="myMeasure3"
 			actualList.get(2).getAccumulatedSamples()==1l
+	}	
+
+	@Unroll
+	def "Register a #type measure on a metric started with #originalType will raise an exception"(){
+		println(">>>>> DefaultMetricsServiceImplSpec >>>> Register a $type measure on a metric started with $originalType will raise an exception")
+
+		setup:
+			def metricsService=new DefaultMetricsServiceImpl(2)
+			for(def measure:measures){
+				metricsService.registerMeasure("myMeasure{}",LocalDateTime.now(),measure,originalType.get(),2)
+			}
+		
+		when:
+			metricsService.registerMeasure("myMeasure{}",LocalDateTime.now(),newMeasure,type.get(),2)
+		
+		then:
+			def e=thrown(IncorrectMeasureType.class)
+			e.getMetricName()=="myMeasure2"
+			e.getOriginalType()==originalType.get().getType()
+			e.getWrongType()==newMeasure.getClass()
+		
+		where:
+			originalType				| measures														| type						| newMeasure
+			MeasureReducers.DOUBLE		| [2.0d,3.0d,4.0d]												| MeasureReducers.DURATION	| Duration.ofDays(2)
+			MeasureReducers.DOUBLE		| [2.0d,3.0d,4.0d]												| MeasureReducers.LONG		| 2l
+			MeasureReducers.LONG		| [2l,3l,4l]													| MeasureReducers.DOUBLE	| 2.0d
+			MeasureReducers.LONG		| [2l,3l,4l]													| MeasureReducers.DURATION	| Duration.ofDays(2)
+			MeasureReducers.DURATION	| [Duration.ofDays(2),Duration.ofDays(3),Duration.ofDays(4)]	| MeasureReducers.DOUBLE	| 2l
+			MeasureReducers.DURATION	| [Duration.ofDays(2),Duration.ofDays(3),Duration.ofDays(4)]	| MeasureReducers.LONG		| 2.0d
+	}	
+
+	def "Call clear should remove all current metrics"(){
+		println(">>>>> DefaultMetricsServiceImplSpec >>>> Call clear should remove all current metrics")
+
+		setup:
+			def metricsService=new DefaultMetricsServiceImpl(4)
+			metricsService.registerMeasure("myMeasure{}",LocalDateTime.now(),1.0d,MeasureReducers.DOUBLE.get(),1)
+			metricsService.registerMeasure("myMeasure{}",LocalDateTime.now(),1l,MeasureReducers.LONG.get(),3)
+			metricsService.registerMeasure("myMeasure{}",LocalDateTime.now(),1.0d,MeasureReducers.DOUBLE.get(),1)
+			metricsService.registerMeasure("myMeasure{}",LocalDateTime.now(),1.0d,MeasureReducers.DOUBLE.get(),1)
+			metricsService.registerMeasure("myMeasure{}",LocalDateTime.now(),1.0d,MeasureReducers.DOUBLE.get(),1)
+			metricsService.registerMeasure("myMeasure{}",LocalDateTime.now(),1.0d,MeasureReducers.DOUBLE.get(),1)
+			metricsService.registerMeasure("myMeasure{}",LocalDateTime.now(),Duration.ofDays(1),MeasureReducers.DURATION.get(),"02")
+			metricsService.registerMeasure("myMeasure{}",LocalDateTime.now(),Duration.ofDays(1),MeasureReducers.DURATION.get(),"02")
+			metricsService.registerMeasure("myMeasure{}",LocalDateTime.now(),Duration.ofDays(1),MeasureReducers.DURATION.get(),"02")
+		
+		when:
+			def actualList=metricsService.clear()
+		
+		then:
+			metricsService.getMetrics().size()==0
 	}	
 }
 

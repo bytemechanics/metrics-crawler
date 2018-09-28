@@ -24,10 +24,15 @@ import org.bytemechanics.metrics.crawler.MeasureReducer;
 /**
  *
  * @author afarre
+ * @since 1.0.0
  */
 public enum MeasureReducers {
 	
 	DURATION(new MeasureReducer<Duration>(){
+				@Override
+				public Class getType() {
+					return Duration.class;
+				}
 				@Override
 				public final Duration identity() {
 					return Duration.ZERO;
@@ -58,8 +63,16 @@ public enum MeasureReducers {
 					String positive = String.format("%d:%02d:%02d",absSeconds / 3600,(absSeconds % 3600) / 60,absSeconds % 60);
 					return seconds < 0 ? "-" + positive : positive;
 				}
+				@Override
+				public String toString() {
+					return "MeasureReducers.Duration";
+				}				
 			}),
 	LONG(new MeasureReducer<Long>(){
+				@Override
+				public Class getType() {
+					return Long.class;
+				}
 				@Override
 				public final Long identity() {
 					return 0l;
@@ -87,8 +100,16 @@ public enum MeasureReducers {
 						return "null";
 					return NumberFormat.getNumberInstance().format(_val);
 				}
+				@Override
+				public String toString() {
+					return "MeasureReducers.Long";
+				}				
 			}),
 	DOUBLE(new MeasureReducer<Double>(){
+				@Override
+				public Class getType() {
+					return Double.class;
+				}
 				@Override
 				public final Double identity() {
 					return 0.0d;
@@ -116,6 +137,10 @@ public enum MeasureReducers {
 						return "null";
 					return NumberFormat.getNumberInstance().format(_val);
 				}
+				@Override
+				public String toString() {
+					return "MeasureReducers.Double";
+				}				
 			}),
 	;
 	

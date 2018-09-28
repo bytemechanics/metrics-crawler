@@ -26,6 +26,7 @@ import org.bytemechanics.metrics.crawler.internal.commons.string.SimpleFormat;
 /**
  * @author afarre
  * @param <TYPE>
+ * @since 1.0.0
  */
 public class Measure<TYPE> {
 	

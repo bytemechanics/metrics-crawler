@@ -22,6 +22,7 @@ import java.util.Queue;
 import java.util.stream.Collectors;
 import org.bytemechanics.metrics.crawler.MeasureReducer;
 import org.bytemechanics.metrics.crawler.beans.MetricSnapshot;
+import org.bytemechanics.metrics.crawler.exceptions.IncorrectMeasureType;
 import org.bytemechanics.metrics.crawler.exceptions.IncorrectSamplingSize;
 import org.bytemechanics.metrics.crawler.internal.commons.collections.FastDropLastQueue;
 import org.bytemechanics.metrics.crawler.internal.commons.string.SimpleFormat;
@@ -29,6 +30,7 @@ import org.bytemechanics.metrics.crawler.internal.commons.string.SimpleFormat;
 /**
  * @author afarre
  * @param <TYPE>
+ * @since 1.0.0
  */
 public class Metric<TYPE> {
 	
@@ -66,6 +68,8 @@ public class Metric<TYPE> {
 
 	
 	public void addMeasure(final LocalDateTime _time,final TYPE _measure){
+		if(!this.reducer.getType().isAssignableFrom(_measure.getClass()))
+			throw new IncorrectMeasureType(this.name, this.reducer.getType(), _measure.getClass());
 		this.hits++;
 		this.measures.offer(new Measure(_time, _measure,this.reducer));
 	}

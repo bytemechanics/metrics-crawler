@@ -28,7 +28,7 @@ import java.time.format.DateTimeFormatter
 import org.bytemechanics.metrics.crawler.beans.MetricSnapshot
 import org.bytemechanics.metrics.crawler.internal.commons.string.SimpleFormat
 import spock.lang.Shared
-import org.bytemechanics.metrics.crawler.exceptions.IncorrectSamplingSize
+import org.bytemechanics.metrics.crawler.exceptions.*
 import org.bytemechanics.metrics.crawler.internal.commons.collections.FastDropLastQueue
 
 /**
@@ -229,6 +229,29 @@ class MetricSpec extends Specification{
 			expected=SimpleFormat.format("Metric[name={}, hits={}, measures={}, reducer={}]", "c", 1, [new Measure(time,measure,metric.getReducer())],metric.getReducer())
 	}
 
+	@Unroll
+	def "When call addMeasure(...,#measure) to metric #metric a IncorrectMeasureType exception must be thrown"(){
+		println(">>>>> MetricSpec >>>> When call addMeasure(...,$measure) to metric $metric a IncorrectMeasureType exception must be thrown")
+
+		when:
+			metric.addMeasure(LocalDateTime.now(),measure)
+			
+		then:
+			def e=thrown(IncorrectMeasureType.class)
+			e.getMetricName()=="c"
+			e.getOriginalType()==metric.getReducer().getType()
+			e.getWrongType()==measure.getClass()
+			
+		where:
+			metric												| measure					
+			new Metric("c",1,MeasureReducers.DURATION.get())	| 3l	
+			new Metric("c",1,MeasureReducers.DURATION.get())	| 1.1d	
+			new Metric("c",1,MeasureReducers.DOUBLE.get())		| 3l						
+			new Metric("c",1,MeasureReducers.DOUBLE.get())		| Duration.ofSeconds(10)					
+			new Metric("c",1,MeasureReducers.LONG.get())		| 1.1d						
+			new Metric("c",1,MeasureReducers.LONG.get())		| Duration.ofSeconds(10)						
+	}
+		
 	@Unroll
 	def "When Metric metric with 2 sampling size is called with addMeasure(_time:#time,_measure:#measure) #times times getMeasures() should return #expected"(){
 		println(">>>>> MetricSpec >>>> When Metric metric with 2 sampling size is called with addMeasure(_time:$time,_measure:$measure) $times times getMeasures() should return $expected")

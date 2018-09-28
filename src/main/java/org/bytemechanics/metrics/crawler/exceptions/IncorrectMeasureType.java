@@ -20,24 +20,27 @@ import org.bytemechanics.metrics.crawler.internal.commons.string.SimpleFormat;
 
 
 /**
- * Exception thrown when samplingSize has incorrect value
+ * Exception thrown when try to register a measure into a metric with a distinct type of the previous ones
  * @author afarre
  * @since 1.0.0
  */
-public class IncorrectSamplingSize extends RuntimeException{
+public class IncorrectMeasureType extends RuntimeException{
 
 	private final String metricName;
-	private final int samplingSize;
+	private final Class originalType;
+	private final Class wrongType;
 	
 	/**
 	 * Sampling size incorrect exception
 	 * @param _metricName metric name that has incorrect sampling size
-	 * @param _samplingSize incorrect sampling size
+	 * @param _originalType Original and correct measure type
+	 * @param _wrongType New and wrong measure type
 	 */
-	public IncorrectSamplingSize(final String _metricName,final int _samplingSize) {
-		super(SimpleFormat.format("Metric {} must have samplingSize {} should be equal or greater than 1", _metricName,_samplingSize));
+	public IncorrectMeasureType(final String _metricName,final Class _originalType,final Class _wrongType) {
+		super(SimpleFormat.format("Metric {} can not register {} measures, because has been created with type {}", _metricName,_wrongType,_originalType));
 		this.metricName=_metricName;
-		this.samplingSize=_samplingSize;
+		this.originalType=_originalType;
+		this.wrongType=_wrongType;
 	}
 
 	/**
@@ -47,20 +50,29 @@ public class IncorrectSamplingSize extends RuntimeException{
 	public String getMetricName() {
 		return metricName;
 	}
-	
+
 	/**
-	 * Incorrect sampling size
-	 * @return incorrect sampling size
+	 * Original and correct measure type
+	 * @return original class type
 	 */
-	public int getSamplingSize() {
-		return samplingSize;
+	public Class getOriginalType() {
+		return originalType;
+	}
+
+	/**
+	 * New and wrong measure type
+	 * @return wrong class type
+	 */
+	public Class getWrongType() {
+		return wrongType;
 	}
 
 	@Override
 	public int hashCode() {
-		int hash = 7;
-		hash = 23 * hash + Objects.hashCode(this.metricName);
-		hash = 23 * hash + this.samplingSize;
+		int hash = 5;
+		hash = 59 * hash + Objects.hashCode(this.metricName);
+		hash = 59 * hash + Objects.hashCode(this.originalType);
+		hash = 59 * hash + Objects.hashCode(this.wrongType);
 		return hash;
 	}
 
@@ -75,10 +87,18 @@ public class IncorrectSamplingSize extends RuntimeException{
 		if (getClass() != obj.getClass()) {
 			return false;
 		}
-		final IncorrectSamplingSize other = (IncorrectSamplingSize) obj;
-		if (this.samplingSize != other.samplingSize) {
+		final IncorrectMeasureType other = (IncorrectMeasureType) obj;
+		if (!Objects.equals(this.metricName, other.metricName)) {
 			return false;
 		}
-		return Objects.equals(this.metricName, other.metricName);
+		if (!Objects.equals(this.originalType, other.originalType)) {
+			return false;
+		}
+		if (!Objects.equals(this.wrongType, other.wrongType)) {
+			return false;
+		}
+		return true;
 	}
+	
+
 }

@@ -20,6 +20,7 @@ import org.bytemechanics.metrics.crawler.impl.DefaultMetricsServiceImpl;
 
 /**
  * @author afarre
+ * @since 1.0.0
  */
 public class MetricsServiceSingleton {
 	
