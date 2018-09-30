@@ -52,7 +52,6 @@ class MetricSpec extends Specification{
 				inputStream.close();
 		}
 	}
-
 	
 	@Unroll
 	def "When Metric is created with _name:#name,_samplingSize:#samplingSize,_reducer:#reducer of type #type the getName() returns #name"(){
@@ -251,6 +250,34 @@ class MetricSpec extends Specification{
 			new Metric("c",1,MeasureReducers.LONG.get())		| 1.1d						
 			new Metric("c",1,MeasureReducers.LONG.get())		| Duration.ofSeconds(10)						
 	}
+
+	def "When try to register null _timestamp metric should raise NullPointerException"(){
+		println(">>>>> MetricSpec >>>> When try to register null _timestamp metric should raise NullPointerException")
+
+		setup:
+			def metric=new Metric("name",100,MeasureReducers.DURATION.get())
+			
+		when:
+			metric.addMeasure(null,Duration.ofSeconds(10))
+
+		then:
+			def e=thrown(NullPointerException)
+			e.getMessage()=="Can not register null _timestamp measure at metric name"
+	}	
+		
+	def "When try to register null _measure metric should raise NullPointerException"(){
+		println(">>>>> MetricSpec >>>> When try to register null _measure metric should raise NullPointerException")
+
+		setup:
+			def metric=new Metric("name",100,MeasureReducers.DURATION.get())
+			
+		when:
+			metric.addMeasure(LocalDateTime.now(),null)
+
+		then:
+			def e=thrown(NullPointerException)
+			e.getMessage()=="Can not register null _measure at metric name"
+	}	
 		
 	@Unroll
 	def "When Metric metric with 2 sampling size is called with addMeasure(_time:#time,_measure:#measure) #times times getMeasures() should return #expected"(){

@@ -46,6 +46,37 @@ class MeasureSpec extends Specification{
 		}
 	}
 
+	def "When try to create null _timestamp measure should raise NullPointerException"(){
+		println(">>>>> MetricSpec >>>> When try to register null _timestamp measure should raise NullPointerException")
+
+		when:
+			def metric=new Measure(null,1.0d,MeasureReducers.DOUBLE.get())
+
+		then:
+			def e=thrown(NullPointerException)
+			e.getMessage()=="Can not create null _timestamp measure"
+	}	
+	def "When try to create null _value measure should raise NullPointerException"(){
+		println(">>>>> MetricSpec >>>> When try to register null _value measure should raise NullPointerException")
+
+		when:
+			def metric=new Measure(LocalDateTime.now(),null,MeasureReducers.DOUBLE.get())
+
+		then:
+			def e=thrown(NullPointerException)
+			e.getMessage()=="Can not create null _value measure"
+	}	
+	def "When try to create null _reducer measure should raise NullPointerException"(){
+		println(">>>>> MetricSpec >>>> When try to register null _reducer measure should raise NullPointerException")
+
+		when:
+			def metric=new Measure(LocalDateTime.now(),1.0d,null)
+
+		then:
+			def e=thrown(NullPointerException)
+			e.getMessage()=="Can not create null _reducer measure"
+	}	
+
 	@Unroll
 	def "When Measure is created with _time:#time,_measure:#measure,_reducer:#reducer of type #type the getTimestamp() returns #time"(){
 		println(">>>>> MeasureSpec >>>> When Measure is created with _time:$time,_measure:$measure,_reducer:$reducer of type $type the getTimestamp() returns $time")
@@ -60,19 +91,8 @@ class MeasureSpec extends Specification{
 		where:
 			time						| measure					| reducer							| type
 			LocalDateTime.now()			| Duration.ofSeconds(10)	| MeasureReducers.DURATION.get()	| Duration.class
-			LocalDateTime.now()			| Duration.ofDays(10)		| null								| Duration.class
-			LocalDateTime.now()			| null						| MeasureReducers.DURATION.get()	| Duration.class
-			null						| Duration.ofHours(10)		| MeasureReducers.DURATION.get()	| Duration.class			
 			LocalDateTime.now()			| 10l						| MeasureReducers.LONG.get()		| Long.class			
-			LocalDateTime.now()			| -9l						| null								| Long.class			
-			LocalDateTime.now()			| null						| MeasureReducers.LONG.get()		| Long.class			
-			null						| -111l						| MeasureReducers.LONG.get()		| Long.class			
 			LocalDateTime.now()			| 10.2d						| MeasureReducers.DOUBLE.get()		| Double.class		
-			LocalDateTime.now()			| -7.8d						| null								| Double.class
-			LocalDateTime.now()			| null						| MeasureReducers.DOUBLE.get()		| Double.class			
-			null						| -2.8d						| MeasureReducers.DOUBLE.get()		| Double.class			
-			null						| null						| MeasureReducers.DURATION.get()	| Double.class			
-			null						| null						| null								| Double.class
 	}	
 
 	@Unroll
@@ -84,24 +104,13 @@ class MeasureSpec extends Specification{
 			
 		then:
 			obj!=null
-			obj.getMeasure()==measure;
+			obj.getValue()==measure;
 			
 		where:
 			time						| measure					| reducer							| type
 			LocalDateTime.now()			| Duration.ofSeconds(10)	| MeasureReducers.DURATION.get()	| Duration.class
-			LocalDateTime.now()			| Duration.ofDays(10)		| null								| Duration.class
-			LocalDateTime.now()			| null						| MeasureReducers.DURATION.get()	| Duration.class
-			null						| Duration.ofHours(10)		| MeasureReducers.DURATION.get()	| Duration.class			
 			LocalDateTime.now()			| 10l						| MeasureReducers.LONG.get()		| Long.class			
-			LocalDateTime.now()			| -9l						| null								| Long.class			
-			LocalDateTime.now()			| null						| MeasureReducers.LONG.get()		| Long.class			
-			null						| -111l						| MeasureReducers.LONG.get()		| Long.class			
 			LocalDateTime.now()			| 10.2d						| MeasureReducers.DOUBLE.get()		| Double.class		
-			LocalDateTime.now()			| -7.8d						| null								| Double.class
-			LocalDateTime.now()			| null						| MeasureReducers.DOUBLE.get()		| Double.class			
-			null						| -2.8d						| MeasureReducers.DOUBLE.get()		| Double.class			
-			null						| null						| MeasureReducers.DURATION.get()	| Double.class			
-			null						| null						| null								| Double.class
 	}	
 
 	@Unroll
@@ -118,40 +127,14 @@ class MeasureSpec extends Specification{
 		where:
 			time						| measure					| reducer							| type				
 			LocalDateTime.now()			| Duration.ofSeconds(10)	| MeasureReducers.DURATION.get()	| Duration.class	
-			LocalDateTime.now()			| Duration.ofDays(10)		| null								| Duration.class	
-			LocalDateTime.now()			| null						| MeasureReducers.DURATION.get()	| Duration.class	
-			null						| Duration.ofHours(10)		| MeasureReducers.DURATION.get()	| Duration.class	
 			LocalDateTime.now()			| 10l						| MeasureReducers.LONG.get()		| Long.class		
-			LocalDateTime.now()			| -9l						| null								| Long.class		
-			LocalDateTime.now()			| null						| MeasureReducers.LONG.get()		| Long.class		
-			null						| -111l						| MeasureReducers.LONG.get()		| Long.class		
 			LocalDateTime.now()			| 10.2d						| MeasureReducers.DOUBLE.get()		| Double.class		
-			LocalDateTime.now()			| -7.8d						| null								| Double.class		
-			LocalDateTime.now()			| null						| MeasureReducers.DOUBLE.get()		| Double.class		
-			null						| -2.8d						| MeasureReducers.DOUBLE.get()		| Double.class		
-			null						| null						| MeasureReducers.DURATION.get()	| Double.class		
-			null						| null						| null								| Double.class		
 			
 			expected = SimpleFormat.format("Measure[timestamp={}, measureType={}, measure={},reducer={}]",
 									Optional.ofNullable(time).map({val -> val.format(DateTimeFormatter.ISO_DATE_TIME)}).orElse("null"),
 									Optional.ofNullable(measure).map({val -> val.getClass()}).map({val -> val.toString()}).orElse("null")
 									,measure
 									,reducer);
-	}	
-
-	@Unroll
-	def "When notNull() is called over #measure then returns #expected"(){
-		println(">>>>> MeasureSpec >>>> When notNull() is called over $measure then returns $expected")
-
-		when:
-			def actual=Measure.notNull(measure)
-			
-		then:
-			actual==expected;
-			
-		where:
-			measure << [new Measure(LocalDateTime.now()	,Duration.ofDays(10),MeasureReducers.DURATION.get()),null]
-			expected = measure!=null;
 	}	
 
 	@Unroll
@@ -170,15 +153,8 @@ class MeasureSpec extends Specification{
 		where:
 			time						| measure					| reducer							| type				
 			LocalDateTime.now()			| Duration.ofSeconds(10)	| MeasureReducers.DURATION.get()	| Duration.class	
-			LocalDateTime.now()			| null						| MeasureReducers.DURATION.get()	| Duration.class	
-			null						| Duration.ofHours(10)		| MeasureReducers.DURATION.get()	| Duration.class	
 			LocalDateTime.now()			| 10l						| MeasureReducers.LONG.get()		| Long.class		
-			LocalDateTime.now()			| null						| MeasureReducers.LONG.get()		| Long.class		
-			null						| -111l						| MeasureReducers.LONG.get()		| Long.class		
 			LocalDateTime.now()			| 10.2d						| MeasureReducers.DOUBLE.get()		| Double.class		
-			LocalDateTime.now()			| null						| MeasureReducers.DOUBLE.get()		| Double.class		
-			null						| -2.8d						| MeasureReducers.DOUBLE.get()		| Double.class		
-			null						| null						| MeasureReducers.DURATION.get()	| Double.class		
 			
 			expected = MetricSnapshot.builder(reducer)
 								.samplingSize(1)
@@ -201,15 +177,8 @@ class MeasureSpec extends Specification{
 		where:
 			time						| measure					| reducer							| type				
 			LocalDateTime.now()			| Duration.ofSeconds(10)	| MeasureReducers.DURATION.get()	| Duration.class	
-			LocalDateTime.now()			| null						| MeasureReducers.DURATION.get()	| Duration.class	
-			null						| Duration.ofHours(10)		| MeasureReducers.DURATION.get()	| Duration.class	
 			LocalDateTime.now()			| 10l						| MeasureReducers.LONG.get()		| Long.class		
-			LocalDateTime.now()			| null						| MeasureReducers.LONG.get()		| Long.class		
-			null						| -111l						| MeasureReducers.LONG.get()		| Long.class		
 			LocalDateTime.now()			| 10.2d						| MeasureReducers.DOUBLE.get()		| Double.class		
-			LocalDateTime.now()			| null						| MeasureReducers.DOUBLE.get()		| Double.class		
-			null						| -2.8d						| MeasureReducers.DOUBLE.get()		| Double.class		
-			null						| null						| MeasureReducers.DURATION.get()	| Double.class		
 	}		
 
 
@@ -228,15 +197,8 @@ class MeasureSpec extends Specification{
 		where:
 			time						| measure					| reducer							| type				
 			LocalDateTime.now()			| Duration.ofSeconds(10)	| MeasureReducers.DURATION.get()	| Duration.class	
-			LocalDateTime.now()			| null						| MeasureReducers.DURATION.get()	| Duration.class	
-			null						| Duration.ofHours(10)		| MeasureReducers.DURATION.get()	| Duration.class	
 			LocalDateTime.now()			| 10l						| MeasureReducers.LONG.get()		| Long.class		
-			LocalDateTime.now()			| null						| MeasureReducers.LONG.get()		| Long.class		
-			null						| -111l						| MeasureReducers.LONG.get()		| Long.class		
 			LocalDateTime.now()			| 10.2d						| MeasureReducers.DOUBLE.get()		| Double.class		
-			LocalDateTime.now()			| null						| MeasureReducers.DOUBLE.get()		| Double.class		
-			null						| -2.8d						| MeasureReducers.DOUBLE.get()		| Double.class		
-			null						| null						| MeasureReducers.DURATION.get()	| Double.class		
 	}	
 }
 

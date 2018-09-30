@@ -31,7 +31,7 @@ public abstract class AbstractNumericSensor<TYPE extends Number> extends Abstrac
 	
 	protected AbstractNumericSensor(final MeasureReducer<TYPE> _reducer,final Optional<MetricsService> _service,final Optional<TYPE> _measure,final String _name,final Object... _args){
 		super(_reducer,_service, _name, _args);
-		this.measure=_measure.orElse(_reducer.identity());
+		this.measure=_measure.orElse(null);
 	}
 
 	
@@ -40,7 +40,7 @@ public abstract class AbstractNumericSensor<TYPE extends Number> extends Abstrac
 	}
 	
 	@Override
-	protected TYPE getMeasure() {
+	public TYPE getMeasure() {
 		return this.measure;
 	}
 }

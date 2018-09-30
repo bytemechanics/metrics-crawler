@@ -19,9 +19,12 @@ public interface MetricsService {
 	 * @param _name name where to replace the values
 	 * @param _placeholders replacement values
 	 * @return the _name with the {} replaced by _placeholders
+	 * @throws NullPointerException if name is null
 	 */
 	public default String buildMetricName(final String _name,final Object... _placeholders){
-		return (_placeholders.length>0)? SimpleFormat.format(_name, _placeholders) : String.valueOf(_name);
+		return Optional.ofNullable(_name)
+					.map(name -> SimpleFormat.format(name, _placeholders))
+					.orElseThrow(() -> new NullPointerException("Can not create null named sensor metric"));
 	}
 	
 	/**

@@ -40,7 +40,7 @@ public abstract class AbstractNumericStackSensor<TYPE extends Number> extends Ab
 	}
 	
 	@Override
-	protected TYPE getMeasure() {
+	public TYPE getMeasure() {
 		return this.measure;
 	}
 }

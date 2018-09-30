@@ -24,60 +24,80 @@ import org.bytemechanics.metrics.crawler.beans.MetricSnapshot;
 import org.bytemechanics.metrics.crawler.internal.commons.string.SimpleFormat;
 
 /**
+ * Measure representation bean
  * @author afarre
- * @param <TYPE>
+ * @param <TYPE> type of the measure
  * @since 1.0.0
  */
 public class Measure<TYPE> {
 	
 	private final LocalDateTime timestamp;
-	private final TYPE measure;
+	private final TYPE value;
 	private final MeasureReducer<TYPE> reducer;
 	
-	public Measure(final LocalDateTime _time,final TYPE _measure,final MeasureReducer<TYPE> _reducer){
-		this.timestamp=_time;
-		this.measure=_measure;
+	/**
+	 * Measure constructor
+	 * @param _timestamp timestamp for this measure (mandatory)
+	 * @param _value measure value (mandatory)
+	 * @param _reducer reducer for this measure (mandatory)
+	 * @throws NullPointerException if either _time, _measure or _reducer are null
+	 */
+	public Measure(final LocalDateTime _timestamp,final TYPE _value,final MeasureReducer<TYPE> _reducer){
+		if(_timestamp==null)
+			throw new NullPointerException("Can not create null _timestamp measure");
+		this.timestamp=_timestamp;
+		if(_value==null)
+			throw new NullPointerException("Can not create null _value measure");
+		this.value=_value;
+		if(_reducer==null)
+			throw new NullPointerException("Can not create null _reducer measure");
 		this.reducer=_reducer;
 	}
 
 	
+	/**
+	 * Retrieves the measure timestamp
+	 * @return the measure timestamp
+	 */
 	public LocalDateTime getTimestamp() {
 		return timestamp;
 	}
-	public Object getMeasure() {
-		return measure;
+	/**
+	 * Retrieves the measure value
+	 * @return the measure value
+	 */
+	public Object getValue() {
+		return value;
 	}
 
-	public MetricSnapshot toMetricSnapshot(){
+	/**
+	 * Convert the current measure in a metricSnapshot
+	 * @return MetricSnapshot of the same TYPE
+	 * @see MetricSnapshot
+	 */
+	public MetricSnapshot<TYPE> toMetricSnapshot(){
 		return MetricSnapshot.builder(this.reducer)
 								.samplingSize(1)
-								.accumulatedSamples(this.measure)
-								.maxMeasure(this.measure)
-								.minMeasure(this.measure)
-								.averageMeasure(this.measure)
-								.lastMeasure(this.measure)
+								.accumulatedSamples(this.value)
+								.maxMeasure(this.value)
+								.minMeasure(this.value)
+								.averageMeasure(this.value)
+								.lastMeasure(this.value)
 								.lastOccurrence(this.timestamp)
 							.build();
 	}
-	
-	@Override
-	public String toString() {
-		return SimpleFormat.format("Measure[timestamp={}, measureType={}, measure={},reducer={}]",
-									Optional.ofNullable(timestamp).map(val -> val.format(DateTimeFormatter.ISO_DATE_TIME)).orElse("null"),
-									Optional.ofNullable(measure).map(val -> val.getClass()).map(val -> val.toString()).orElse("null"),
-									measure,
-									reducer);
-	}
 
+	/** @see Object#hashCode() */
 	@Override
 	public int hashCode() {
 		int hash = 7;
 		hash = 19 * hash + Objects.hashCode(this.timestamp);
-		hash = 19 * hash + Objects.hashCode(this.measure);
+		hash = 19 * hash + Objects.hashCode(this.value);
 		hash = 19 * hash + Objects.hashCode(this.reducer);
 		return hash;
 	}
 
+	/** @see Object#equals(java.lang.Object)  */
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj) {
@@ -93,13 +113,19 @@ public class Measure<TYPE> {
 		if (!Objects.equals(this.timestamp, other.timestamp)) {
 			return false;
 		}
-		if (!Objects.equals(this.measure, other.measure)) {
+		if (!Objects.equals(this.value, other.value)) {
 			return false;
 		}
 		return Objects.equals(this.reducer, other.reducer);
-	}
-
-	public static boolean notNull(final Measure _measure){
-		return _measure!=null;
+	}	
+	
+	/** @see Object#toString()   */
+	@Override
+	public String toString() {
+		return SimpleFormat.format("Measure[timestamp={}, measureType={}, measure={},reducer={}]",
+									Optional.ofNullable(timestamp).map(val -> val.format(DateTimeFormatter.ISO_DATE_TIME)).orElse("null"),
+									Optional.ofNullable(value).map(val -> val.getClass()).map(val -> val.toString()).orElse("null"),
+									value,
+									reducer);
 	}
 }

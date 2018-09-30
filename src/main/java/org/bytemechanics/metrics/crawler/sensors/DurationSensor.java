@@ -35,7 +35,7 @@ public class DurationSensor extends AbstractSensor<Duration>{
 	}
 
 	@Override
-	protected Duration getMeasure() {
+	public Duration getMeasure() {
 		return Duration.between(startTime, Instant.now());
 	}
 

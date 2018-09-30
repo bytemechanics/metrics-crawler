@@ -35,7 +35,7 @@ public class DurationStackSensor extends AbstractStackSensor<Duration>{
 	}
 
 	@Override
-	protected Duration getMeasure() {
+	public Duration getMeasure() {
 		return Duration.between(startTime, Instant.now());
 	}
 

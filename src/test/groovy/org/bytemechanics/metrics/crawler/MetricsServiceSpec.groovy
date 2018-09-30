@@ -42,6 +42,20 @@ class MetricsServiceSpec extends Specification{
 		}
 	}
 	
+	def "Try to build a null named name should raise NullPointerException"(){
+		println(">>>>> MetricsServiceSpec >>>> Try to build a null named name should raise NullPointerException")
+
+		given:
+			def metricsService=new DefaultMetricsServiceImpl()
+
+		when:
+			metricsService.buildMetricName(null)
+		
+		then:
+			def e=thrown(NullPointerException)
+			e.getMessage()=="Can not create null named sensor metric"
+	}	
+	
 	@Unroll
 	def "When any MetricsService try to build buildMetricName with #name and #args the result should be #result"(){
 		println(">>>>> MetricsServiceSpec >>>> When any MetricsService try to build buildMetricName with $name and $args the result should be $result")
