@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.bytemechanics.metrics.crawler.sensors
+package org.bytemechanics.metrics.crawler.sensors.stack
 
 import spock.lang.Specification
 import spock.lang.Unroll
@@ -32,11 +32,11 @@ import org.bytemechanics.metrics.crawler.internal.MetricsServiceSingleton
 /**
  * @author afarre
  */
-class AbstractSensorSpec extends Specification{
+class AbstractStackSensorSpec extends Specification{
 	
 	def setupSpec(){
-		println(">>>>> AbstractSensorSpec >>>> setupSpec")
-		final InputStream inputStream = AbstractSensorSpec.class.getResourceAsStream("/logging.properties");
+		println(">>>>> AbstractStackSensorSpec >>>> setupSpec")
+		final InputStream inputStream = AbstractStackSensorSpec.class.getResourceAsStream("/logging.properties");
 		try{
 			LogManager.getLogManager().readConfiguration(inputStream);
 		}catch (final IOException e){
@@ -49,20 +49,20 @@ class AbstractSensorSpec extends Specification{
 	}
 
 	def cleanupSpec(){
-		println(">>>>> AbstractSensorSpec >>>> cleanupSpec")
-		AbstractSensor.registerMetricsServiceSupplier({ -> MetricsServiceSingleton.getInstance().getMetricsService()})
+		println(">>>>> AbstractStackSensorSpec >>>> cleanupSpec")
+		AbstractStackSensor.registerMetricsServiceSupplier({ -> MetricsServiceSingleton.getInstance().getMetricsService()})
 	}
 
 	def "When call getMetricService() without register any metric service supplier the instance must be always the same DefaultMetricsServiceImpl from the automatic singleton"() {
-		println(">>>>> AbstractSensorSpec >>>> When call getMetricService() without register any metric service supplier the instance must be always the same DefaultMetricsServiceImpl from the automatic singleton")
+		println(">>>>> AbstractStackSensorSpec >>>> When call getMetricService() without register any metric service supplier the instance must be always the same DefaultMetricsServiceImpl from the automatic singleton")
 		
 		when:
-			def sensor1=DoubleSensor.get("name1")
-			def sensor2=DoubleSensor.get("name2")
-			def sensor3=DoubleSensor.get("name3")
-			def sensor4=DoubleSensor.get("name4")
-			def sensor5=DoubleSensor.get("name5")
-			def sensor6=DoubleSensor.get("name6")
+			def sensor1=DoubleStackSensor.get("name1")
+			def sensor2=DoubleStackSensor.get("name2")
+			def sensor3=DoubleStackSensor.get("name3")
+			def sensor4=DoubleStackSensor.get("name4")
+			def sensor5=DoubleStackSensor.get("name5")
+			def sensor6=DoubleStackSensor.get("name6")
 		
 		then:
 			System.identityHashCode(sensor1.getMetricService())==System.identityHashCode(sensor2.getMetricService())
@@ -73,17 +73,17 @@ class AbstractSensorSpec extends Specification{
 	}
 
 	def "When call getMetricService() without having registered another supplier then the instance retrieved should be the supplied one"() {
-		println(">>>>> AbstractSensorSpec >>>> When call getMetricService() without having registered another supplier then the instance retrieved should be the supplied one")
+		println(">>>>> AbstractStackSensorSpec >>>> When call getMetricService() without having registered another supplier then the instance retrieved should be the supplied one")
 
 		when:
 			def metricService=new DefaultMetricsServiceImpl()
-			def sensor1=DoubleSensor.get("name1")
-			def sensor2=DoubleSensor.get("name2")
-			def sensor3=DoubleSensor.get("name3")
-			AbstractSensor.registerMetricsServiceSupplier({ -> metricService})
-			def sensor4=DoubleSensor.get("name4")
-			def sensor5=DoubleSensor.get("name5")
-			def sensor6=DoubleSensor.get("name6")
+			def sensor1=DoubleStackSensor.get("name1")
+			def sensor2=DoubleStackSensor.get("name2")
+			def sensor3=DoubleStackSensor.get("name3")
+			AbstractStackSensor.registerMetricsServiceSupplier({ -> metricService})
+			def sensor4=DoubleStackSensor.get("name4")
+			def sensor5=DoubleStackSensor.get("name5")
+			def sensor6=DoubleStackSensor.get("name6")
 
 		then:
 			System.identityHashCode(metricService)!=System.identityHashCode(sensor1.getMetricService())

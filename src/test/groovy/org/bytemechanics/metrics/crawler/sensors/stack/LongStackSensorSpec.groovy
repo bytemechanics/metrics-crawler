@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.bytemechanics.metrics.crawler.sensors
+package org.bytemechanics.metrics.crawler.sensors.stack
 
 import spock.lang.Specification
 import spock.lang.Unroll
@@ -34,11 +34,11 @@ import org.bytemechanics.metrics.crawler.MetricsService
 /**
  * @author afarre
  */
-class LongSensorSpec extends Specification{
+class LongStackSensorSpec extends Specification{
 	
 	def setupSpec(){
-		println(">>>>> LongSensorSpec >>>> setupSpec")
-		final InputStream inputStream = LongSensorSpec.class.getResourceAsStream("/logging.properties");
+		println(">>>>> LongStackSensorSpec >>>> setupSpec")
+		final InputStream inputStream = LongStackSensorSpec.class.getResourceAsStream("/logging.properties");
 		try{
 			LogManager.getLogManager().readConfiguration(inputStream);
 		}catch (final IOException e){
@@ -49,12 +49,16 @@ class LongSensorSpec extends Specification{
 				inputStream.close();
 		}
 	}
+	def cleanup(){
+		println(">>>>> LongStackSensorSpec >>>> cleanup")
+		AbstractStackSensor.CURRENT_NAME.set(null)
+	}
 
 	def "Create a null name metric sensor should raise NullPointerException"(){
-		println(">>>>> LongSensorSpec >>>> Create a null name metric sensor should raise NullPointerException")
+		println(">>>>> LongStackSensorSpec >>>> Create a null name metric sensor should raise NullPointerException")
 
 		when:
-			LongSensor.get(null)
+			LongStackSensor.get(null)
 			
 		then:
 			def e=thrown(NullPointerException)
@@ -62,11 +66,11 @@ class LongSensorSpec extends Specification{
 	}	
 
 	@Unroll
-	def "When create a long sensor with get(_name:#name,_args:#args) and then call getName() should return #expected"(){
-		println(">>>>> LongSensorSpec >>>> When create a long sensor with get(_name:$name,_args:$args) and then call getName() should return $expected")
+	def "When create a long stack sensor with get(_name:#name,_args:#args) and then call getName() should return #expected"(){
+		println(">>>>> LongStackSensorSpec >>>> When create a long stack sensor with get(_name:$name,_args:$args) and then call getName() should return $expected")
 
 		when:
-			def obj=LongSensor.get(name,(Object[])args)
+			def obj=LongStackSensor.get(name,(Object[])args)
 			
 		then:
 			obj.getName()!=null
@@ -85,11 +89,11 @@ class LongSensorSpec extends Specification{
 	}	
 
 	@Unroll
-	def "When create a long sensor with get(_measure:#measure,_name:#name,_args:#args) and then call getName() should return #expected"(){
-		println(">>>>> LongSensorSpec >>>> When create a long sensor with get(_measure:$measure,_name:$name,_args:$args) and then call getName() should return $expected")
+	def "When create a long stack sensor with get(_measure:#measure,_name:#name,_args:#args) and then call getName() should return #expected"(){
+		println(">>>>> LongStackSensorSpec >>>> When create a long stack sensor with get(_measure:$measure,_name:$name,_args:$args) and then call getName() should return $expected")
 
 		when:
-			def obj=LongSensor.get(measure,name,(Object[])args)
+			def obj=LongStackSensor.get(measure,name,(Object[])args)
 			
 		then:
 			obj.getName()!=null
@@ -108,11 +112,11 @@ class LongSensorSpec extends Specification{
 	}	
 
 	@Unroll
-	def "When create a long sensor with get(_measure:#measure,_name:#name,_args:#args) and then call getMeasure() should return #measure"(){
-		println(">>>>> LongSensorSpec >>>> When create a long sensor with get(_measure:$measure,_name:$name,_args:$args) and then call getMeasure() should return $measure")
+	def "When create a long stack sensor with get(_measure:#measure,_name:#name,_args:#args) and then call getMeasure() should return #measure"(){
+		println(">>>>> LongStackSensorSpec >>>> When create a long stack sensor with get(_measure:$measure,_name:$name,_args:$args) and then call getMeasure() should return $measure")
 
 		when:
-			def obj=LongSensor.get(measure,name,(Object[])args)
+			def obj=LongStackSensor.get(measure,name,(Object[])args)
 			
 		then:
 			obj.getMeasure()==measure;
@@ -130,11 +134,11 @@ class LongSensorSpec extends Specification{
 	}	
 
 	@Unroll
-	def "When create a long sensor with get(_measure:#measure,_name:#name,_args:#args) and then call isSkip() should return false"(){
-		println(">>>>> LongSensorSpec >>>> When create a long sensor with get(_measure:$measure,_name:$name,_args:$args) and then call isSkip() should return false")
+	def "When create a long stack sensor with get(_measure:#measure,_name:#name,_args:#args) and then call isSkip() should return false"(){
+		println(">>>>> LongStackSensorSpec >>>> When create a long stack sensor with get(_measure:$measure,_name:$name,_args:$args) and then call isSkip() should return false")
 
 		when:
-			def obj=LongSensor.get(measure,name,(Object[])args)
+			def obj=LongStackSensor.get(measure,name,(Object[])args)
 			
 		then:
 			obj.isSkip()==false
@@ -152,11 +156,11 @@ class LongSensorSpec extends Specification{
 	}
 	
 	@Unroll
-	def "When create a long sensor with get(_measure:#measure,_name:#name,_args:#args) and call skip() then isSkip() return true"(){
-		println(">>>>> LongSensorSpec >>>> When create a long sensor with get(_measure:#measure,_name:$name,_args:$args) and call skip() then isSkip() return true")
+	def "When create a long stack sensor with get(_measure:#measure,_name:#name,_args:#args) and call skip() then isSkip() return true"(){
+		println(">>>>> LongStackSensorSpec >>>> When create a long stack sensor with get(_measure:#measure,_name:$name,_args:$args) and call skip() then isSkip() return true")
 
 		when:
-			def obj=LongSensor.get(measure,name,(Object[])args)
+			def obj=LongStackSensor.get(measure,name,(Object[])args)
 			obj.skip()
 			
 		then:
@@ -175,11 +179,11 @@ class LongSensorSpec extends Specification{
 	}	
 
 	@Unroll
-	def "When create a long sensor with get(_measure:#measure,_name:#name,_args:#args) and call setMeasure(#measure2) then getMeasure() should return #measure2"(){
-		println(">>>>> LongSensorSpec >>>> When create a long sensor with get(_measure:$measure,_name:$name,_args:$args) and call setMeasure($measure2) then getMeasure() should return $measure2")
+	def "When create a long stack sensor with get(_measure:#measure,_name:#name,_args:#args) and call setMeasure(#measure2) then getMeasure() should return #measure2"(){
+		println(">>>>> LongStackSensorSpec >>>> When create a long stack sensor with get(_measure:$measure,_name:$name,_args:$args) and call setMeasure($measure2) then getMeasure() should return $measure2")
 
 		when:
-			def obj=LongSensor.get(measure,name,(Object[])args)
+			def obj=LongStackSensor.get(measure,name,(Object[])args)
 			obj.setMeasure(measure2)
 			
 		then:
@@ -199,22 +203,22 @@ class LongSensorSpec extends Specification{
 
 	@Unroll
 	def "When close() sensor with name:#name,args:#args and measure:#measure metric must add to metricservice the registered measure"(){
-		println(">>>>> LongSensorSpec >>>> When close() sensor with name:$name,args:$args and measure:$measure metric must add to metricservice the registered measure")
+		println(">>>>> LongStackSensorSpec >>>> When close() sensor with name:$name,args:$args and measure:$measure metric must add to metricservice the registered measure")
 
 		given:
 			def metricsService = Mock(MetricsService.class)
 			metricsService.buildMetricName(name,args) >> "name"
-			LongSensor.registerMetricsServiceSupplier({ -> metricsService})
+			LongStackSensor.registerMetricsServiceSupplier({ -> metricsService})
 
 		when:
-			def obj=LongSensor.get(measure,name,(Object[])args)
+			def obj=LongStackSensor.get(measure,name,(Object[])args)
 			obj.close()
 			
 		then:
 			1 * metricsService.registerMeasure('name',!null,measure,MeasureReducers.LONG.get(Long.class), [])
 			
 		cleanup:
-			AbstractSensor.registerMetricsServiceSupplier({ -> MetricsServiceSingleton.getInstance().getMetricsService()})
+			AbstractStackSensor.registerMetricsServiceSupplier({ -> MetricsServiceSingleton.getInstance().getMetricsService()})
 
 		where:
 			name		| args					| measure	
@@ -229,22 +233,22 @@ class LongSensorSpec extends Specification{
 
 	@Unroll
 	def "When close() sensor with name:#name,args:#args and null measure then no registration should take part"(){
-		println(">>>>> LongSensorSpec >>>> When close() sensor with name:#name,args:#args and null measure then no registration should take part")
+		println(">>>>> LongStackSensorSpec >>>> When close() sensor with name:#name,args:#args and null measure then no registration should take part")
 
 		given:
 			def metricsService = Mock(MetricsService.class)
 			metricsService.buildMetricName(name,args) >> "name"
-			LongSensor.registerMetricsServiceSupplier({ -> metricsService})
+			LongStackSensor.registerMetricsServiceSupplier({ -> metricsService})
 
 		when:
-			def obj=LongSensor.get(measure,name,(Object[])args)
+			def obj=LongStackSensor.get(measure,name,(Object[])args)
 			obj.close()
 			
 		then:
 			0 * metricsService.registerMeasure('name',!null,measure,MeasureReducers.LONG.get(Long.class), [])
 			
 		cleanup:
-			AbstractSensor.registerMetricsServiceSupplier({ -> MetricsServiceSingleton.getInstance().getMetricsService()})
+			AbstractStackSensor.registerMetricsServiceSupplier({ -> MetricsServiceSingleton.getInstance().getMetricsService()})
 
 		where:
 			name		| args					| measure	

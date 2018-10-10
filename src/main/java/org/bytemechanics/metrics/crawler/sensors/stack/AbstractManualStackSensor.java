@@ -24,14 +24,14 @@ import org.bytemechanics.metrics.crawler.MetricsService;
  * @author afarre
  * @param <TYPE>
  */
-public abstract class AbstractNumericStackSensor<TYPE extends Number> extends AbstractStackSensor<TYPE>{
+public abstract class AbstractManualStackSensor<TYPE extends Number> extends AbstractStackSensor<TYPE>{
 	
 	protected TYPE measure;
 	
 	
-	protected AbstractNumericStackSensor(final MeasureReducer<TYPE> _reducer,final Optional<MetricsService> _service,final Optional<TYPE> _measure,final String _name,final Object... _args){
+	protected AbstractManualStackSensor(final MeasureReducer<TYPE> _reducer,final Optional<MetricsService> _service,final Optional<TYPE> _measure,final String _name,final Object... _args){
 		super(_reducer,_service, _name, _args);
-		this.measure=_measure.orElse(_reducer.identity());
+		this.measure=_measure.orElse(null);
 	}
 
 	

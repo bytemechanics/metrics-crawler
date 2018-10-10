@@ -22,7 +22,7 @@ import org.bytemechanics.metrics.crawler.internal.MeasureReducers;
  *
  * @author afarre
  */
-public class DoubleStackSensor extends AbstractNumericStackSensor<Double> {
+public class DoubleStackSensor extends AbstractManualStackSensor<Double> {
 
 	protected DoubleStackSensor(final Optional<Double> _measure,final String _name,final Object... _args){
 		super(MeasureReducers.DOUBLE.get(Double.class),Optional.empty(),_measure,_name,_args);

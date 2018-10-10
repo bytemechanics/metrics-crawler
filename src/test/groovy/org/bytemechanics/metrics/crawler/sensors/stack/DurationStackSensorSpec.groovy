@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.bytemechanics.metrics.crawler.sensors
+package org.bytemechanics.metrics.crawler.sensors.stack
 
 import spock.lang.Specification
 import spock.lang.Unroll
@@ -34,11 +34,11 @@ import org.bytemechanics.metrics.crawler.MetricsService
 /**
  * @author afarre
  */
-class DurationSensorSpec extends Specification{
+class DurationStackSensorSpec extends Specification{
 	
 	def setupSpec(){
-		println(">>>>> DurationSensorSpec >>>> setupSpec")
-		final InputStream inputStream = DurationSensorSpec.class.getResourceAsStream("/logging.properties");
+		println(">>>>> DurationStackSensorSpec >>>> setupSpec")
+		final InputStream inputStream = DurationStackSensorSpec.class.getResourceAsStream("/logging.properties");
 		try{
 			LogManager.getLogManager().readConfiguration(inputStream);
 		}catch (final IOException e){
@@ -49,12 +49,16 @@ class DurationSensorSpec extends Specification{
 				inputStream.close();
 		}
 	}
+	def cleanup(){
+		println(">>>>> DurationStackSensorSpec >>>> cleanup")
+		AbstractStackSensor.CURRENT_NAME.set(null)
+	}
 
 	def "Create a null name metric sensor should raise NullPointerException"(){
-		println(">>>>> DurationSensorSpec >>>> Create a null name metric sensor should raise NullPointerException")
+		println(">>>>> DurationStackSensorSpec >>>> Create a null name metric sensor should raise NullPointerException")
 
 		when:
-			DurationSensor.get(null)
+			DurationStackSensor.get(null)
 			
 		then:
 			def e=thrown(NullPointerException)
@@ -62,11 +66,11 @@ class DurationSensorSpec extends Specification{
 	}	
 
 	@Unroll
-	def "When create a duration sensor with get(_name:#name,_args:#args) and then call getName() should return #expected"(){
-		println(">>>>> DurationSensorSpec >>>> When create a duration sensor with get(_name:$name,_args:$args) and then call getName() should return $expected")
+	def "When create a duration stack sensor with get(_name:#name,_args:#args) and then call getName() should return #expected"(){
+		println(">>>>> DurationStackSensorSpec >>>> When create a duration stack sensor with get(_name:$name,_args:$args) and then call getName() should return $expected")
 
 		when:
-			def obj=DurationSensor.get(name,(Object[])args)
+			def obj=DurationStackSensor.get(name,(Object[])args)
 			
 		then:
 			obj.getName()!=null
@@ -86,11 +90,11 @@ class DurationSensorSpec extends Specification{
 
 
 	@Unroll
-	def "When create a duration sensor with get(_name:#name,_args:#args) and then call isSkip() should return false"(){
-		println(">>>>> DurationSensorSpec >>>> When create a duration sensor with get(_name:$name,_args:$args) and then call isSkip() should return false")
+	def "When create a duration stack sensor with get(_name:#name,_args:#args) and then call isSkip() should return false"(){
+		println(">>>>> DurationStackSensorSpec >>>> When create a duration stack sensor with get(_name:$name,_args:$args) and then call isSkip() should return false")
 
 		when:
-			def obj=DurationSensor.get(name,(Object[])args)
+			def obj=DurationStackSensor.get(name,(Object[])args)
 			
 		then:
 			obj.isSkip()==false
@@ -108,11 +112,11 @@ class DurationSensorSpec extends Specification{
 	}
 	
 	@Unroll
-	def "When create a duration sensor with get(_measure:#measure,_name:#name,_args:#args) and call skip() then isSkip() return true"(){
-		println(">>>>> DurationSensorSpec >>>> When create a duration sensor with get(_measure:#measure,_name:$name,_args:$args) and call skip() then isSkip() return true")
+	def "When create a duration stack sensor with get(_measure:#measure,_name:#name,_args:#args) and call skip() then isSkip() return true"(){
+		println(">>>>> DurationStackSensorSpec >>>> When create a duration stack sensor with get(_measure:#measure,_name:$name,_args:$args) and call skip() then isSkip() return true")
 
 		when:
-			def obj=DurationSensor.get(name,(Object[])args)
+			def obj=DurationStackSensor.get(name,(Object[])args)
 			obj.skip()
 			
 		then:
@@ -132,22 +136,22 @@ class DurationSensorSpec extends Specification{
 
 	@Unroll
 	def "When close() sensor with name:#name,args:#arg metric must add to metricservice the registered measure"(){
-		println(">>>>> DurationSensorSpec >>>> When close() sensor with name:$name,args:$args metric must add to metricservice the registered measure")
+		println(">>>>> DurationStackSensorSpec >>>> When close() sensor with name:$name,args:$args metric must add to metricservice the registered measure")
 
 		given:
 			def metricsService = Mock(MetricsService.class)
 			metricsService.buildMetricName(name,args) >> "name"
-			DurationSensor.registerMetricsServiceSupplier({ -> metricsService})
+			DurationStackSensor.registerMetricsServiceSupplier({ -> metricsService})
 
 		when:
-			def obj=DurationSensor.get(name,(Object[])args)
+			def obj=DurationStackSensor.get(name,(Object[])args)
 			obj.close()
 			
 		then:
 			1 * metricsService.registerMeasure('name',!null,!null,MeasureReducers.DURATION.get(Duration.class), [])
 			
 		cleanup:
-			AbstractSensor.registerMetricsServiceSupplier({ -> MetricsServiceSingleton.getInstance().getMetricsService()})
+			AbstractStackSensor.registerMetricsServiceSupplier({ -> MetricsServiceSingleton.getInstance().getMetricsService()})
 
 		where:
 			name		| args					
