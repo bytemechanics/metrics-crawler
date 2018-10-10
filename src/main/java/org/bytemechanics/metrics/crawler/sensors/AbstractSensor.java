@@ -57,7 +57,7 @@ public abstract class AbstractSensor<TYPE> implements AutoCloseable{
 	 */
 	protected AbstractSensor(final MeasureReducer<TYPE> _reducer,final Optional<MetricsService> _service,final String _name,final Object... _args){
 		this.reducer=_reducer;
-		this.metricService=_service.orElse(Optional.ofNullable(metricsServiceSupplier.get())
+		this.metricService=_service.orElse(Optional.ofNullable(AbstractSensor.metricsServiceSupplier.get())
 												.orElseThrow(() -> new NullPointerException("The current metricServiceSupplier has returned a null metric service")));
 		this.name=Optional.ofNullable(_name)
 					.map(nonNullName -> this.metricService.buildMetricName(nonNullName, _args))
@@ -106,8 +106,8 @@ public abstract class AbstractSensor<TYPE> implements AutoCloseable{
 	 * @param _measure measure to evaluate
 	 * @return true if the given measure must be ignored
 	 */
-	protected final boolean mustSkip(final TYPE _measure) {
-		return isSkip();
+	protected final boolean isValidMeasure(final TYPE _measure) {
+		return !isSkip();
 	}
 	/**
 	 * Register measure in the current MetricsService
@@ -131,7 +131,7 @@ public abstract class AbstractSensor<TYPE> implements AutoCloseable{
 	@Override
 	public void close() {
 		Optional.ofNullable(getMeasure())
-					.filter(this::mustSkip)
+					.filter(this::isValidMeasure)
 					.ifPresent(this::registerMeasure);
 	}
 
@@ -145,7 +145,7 @@ public abstract class AbstractSensor<TYPE> implements AutoCloseable{
 	public static void registerMetricsServiceSupplier(final Supplier<MetricsService> _metricsServiceSupplier){
 		if(_metricsServiceSupplier==null)
 			throw new NullPointerException("Unable to register null _metricsServiceSupplier");
-		metricsServiceSupplier=_metricsServiceSupplier;
+		AbstractSensor.metricsServiceSupplier=_metricsServiceSupplier;
 	}
 }
 

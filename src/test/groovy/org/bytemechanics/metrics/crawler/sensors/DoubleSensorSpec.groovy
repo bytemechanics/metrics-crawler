@@ -26,6 +26,10 @@ import java.time.Duration
 import java.time.format.DateTimeFormatter
 import org.bytemechanics.metrics.crawler.beans.MetricSnapshot
 import org.bytemechanics.metrics.crawler.internal.commons.string.SimpleFormat
+import org.bytemechanics.metrics.crawler.internal.*
+import org.bytemechanics.metrics.crawler.impl.*
+import org.bytemechanics.metrics.crawler.MetricsService
+
 
 /**
  * @author afarre
@@ -168,6 +172,85 @@ class DoubleSensorSpec extends Specification{
 			"{}b{}c{}"	| [null,2.0d,"string"]	| "nullb2.0cstring"	| 5.1d
 			"{}b{}c{}"	| [1,null,"string"]		| "1bnullcstring"	| 5.2d
 			"{}b{}c{}"	| [1,2.0d,null]			| "1b2.0cnull"		| 5.3d	
+	}	
+
+	@Unroll
+	def "When create a double sensor with get(_measure:#measure,_name:#name,_args:#args) and call setMeasure(#measure2) then getMeasure() should return #measure2"(){
+		println(">>>>> DoubleSensorSpec >>>> When create a double sensor with get(_measure:$measure,_name:$name,_args:$args) and call setMeasure($measure2) then getMeasure() should return $measure2")
+
+		when:
+			def obj=DoubleSensor.get(measure,name,(Object[])args)
+			obj.setMeasure(measure2)
+			
+		then:
+			obj.getMeasure()==measure2
+			
+		where:
+			name		| args					| measure	| measure2
+			"a"			| [1,2.0d,"string"]		| 1.0d		| 2.0d
+			"{}b{}c{}"	| []					| 2.0d		| 1.0d
+			"{}b{}c{}"	| [1]					| null		| null
+			"{}b{}c{}"	| [1,2.0d]				| 3.0d		| 4.0d
+			"{}b{}c{}"	| [1,2.0d,"string"]		| 4.0d		| 5.0d
+			"{}b{}c{}"	| [null,2.0d,"string"]	| 5.1d		| 6.1d
+			"{}b{}c{}"	| [1,null,"string"]		| 5.2d		| 6.2d
+			"{}b{}c{}"	| [1,2.0d,null]			| 5.3d		| 6.3d	
+	}	
+
+	@Unroll
+	def "When close() sensor with name:#name,args:#args and measure:#measure metric must add to metricservice the registered measure"(){
+		println(">>>>> DoubleSensorSpec >>>> When close() sensor with name:$name,args:$args and measure:$measure metric must add to metricservice the registered measure")
+
+		given:
+			def metricsService = Mock(MetricsService.class)
+			metricsService.buildMetricName(name,args) >> "name"
+			DoubleSensor.registerMetricsServiceSupplier({ -> metricsService})
+
+		when:
+			def obj=DoubleSensor.get(measure,name,(Object[])args)
+			obj.close()
+			
+		then:
+			1 * metricsService.registerMeasure('name',!null,measure,MeasureReducers.DOUBLE.get(Double.class), [])
+			
+		cleanup:
+			AbstractSensor.registerMetricsServiceSupplier({ -> MetricsServiceSingleton.getInstance().getMetricsService()})
+
+		where:
+			name		| args					| measure	
+			"a"			| [1,2.0d,"string"]		| 1.0d		
+			"{}b{}c{}"	| []					| 2.0d		
+			"{}b{}c{}"	| [1,2.0d]				| 3.0d		
+			"{}b{}c{}"	| [1,2.0d,"string"]		| 4.0d		
+			"{}b{}c{}"	| [null,2.0d,"string"]	| 5.1d		
+			"{}b{}c{}"	| [1,null,"string"]		| 5.2d		
+			"{}b{}c{}"	| [1,2.0d,null]			| 5.3d		
+	}	
+
+	@Unroll
+	def "When close() sensor with name:#name,args:#args and null measure then no registration should take part"(){
+		println(">>>>> DoubleSensorSpec >>>> When close() sensor with name:#name,args:#args and null measure then no registration should take part")
+
+		given:
+			def metricsService = Mock(MetricsService.class)
+			metricsService.buildMetricName(name,args) >> "name"
+			DoubleSensor.registerMetricsServiceSupplier({ -> metricsService})
+
+		when:
+			def obj=DoubleSensor.get(measure,name,(Object[])args)
+			obj.close()
+			
+		then:
+			0 * metricsService.registerMeasure('name',!null,measure,MeasureReducers.DOUBLE.get(Double.class), [])
+			
+		cleanup:
+			AbstractSensor.registerMetricsServiceSupplier({ -> MetricsServiceSingleton.getInstance().getMetricsService()})
+
+		where:
+			name		| args					| measure	
+			"a"			| [1,2.0d,"string"]		| null		
+			"{}b{}c{}"	| []					| null		
+			"{}b{}c{}"	| [1]					| null		
 	}	
 }
 

@@ -39,6 +39,12 @@ public class DefaultMetricsServiceImpl implements MetricsService {
 	public int getSamplingSize(){
 		return this.samplingSize;
 	}
+
+	/**@see MetricsService#buildMetricName(java.lang.String, java.lang.Object...) */
+	@Override
+	public String buildMetricName(final String _name,final Object... _placeholders) {
+		return MetricsService.super.buildMetricName(_name, _placeholders); //To change body of generated methods, choose Tools | Templates.
+	}
 	
 	/** @see MetricsService#registerMeasure(java.lang.String, java.time.LocalDateTime, java.lang.Object, org.bytemechanics.metrics.crawler.MeasureReducer, java.lang.Object...)  */
 	@Override
@@ -50,7 +56,7 @@ public class DefaultMetricsServiceImpl implements MetricsService {
 	
 	/** @see MetricsService#getMetric(java.lang.String, java.lang.Object...)  */
 	@Override
-	public Optional<MetricSnapshot> getMetric(String _measure,final Object... _placeholders) {
+	public Optional<MetricSnapshot> getMetric(final String _measure,final Object... _placeholders) {
 		return Optional.ofNullable(buildMetricName(_measure,_placeholders))
 							.map(this.metrics::get)
 							.map(Metric::toSnapshot);
