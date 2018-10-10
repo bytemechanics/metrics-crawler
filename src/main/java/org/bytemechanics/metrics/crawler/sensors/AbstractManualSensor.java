@@ -24,12 +24,12 @@ import org.bytemechanics.metrics.crawler.MetricsService;
  * @author afarre
  * @param <TYPE>
  */
-public abstract class AbstractNumericSensor<TYPE extends Number> extends AbstractSensor<TYPE>{
+public abstract class AbstractManualSensor<TYPE extends Number> extends AbstractSensor<TYPE>{
 	
 	protected TYPE measure;
 	
 	
-	protected AbstractNumericSensor(final MeasureReducer<TYPE> _reducer,final Optional<MetricsService> _service,final Optional<TYPE> _measure,final String _name,final Object... _args){
+	protected AbstractManualSensor(final MeasureReducer<TYPE> _reducer,final Optional<MetricsService> _service,final Optional<TYPE> _measure,final String _name,final Object... _args){
 		super(_reducer,_service, _name, _args);
 		this.measure=_measure.orElse(null);
 	}

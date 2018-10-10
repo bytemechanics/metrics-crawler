@@ -22,7 +22,7 @@ import org.bytemechanics.metrics.crawler.internal.MeasureReducers;
  *
  * @author afarre
  */
-public class LongSensor extends AbstractNumericSensor<Long> {
+public class LongSensor extends AbstractManualSensor<Long> {
 
 	protected LongSensor(final Optional<Long> _measure,final String _name,final Object... _args){
 		super(MeasureReducers.LONG.get(Long.class),Optional.empty(),_measure,_name,_args);
