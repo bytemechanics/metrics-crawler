@@ -95,5 +95,43 @@ class AbstractStackSensorSpec extends Specification{
 			System.identityHashCode(metricService)==System.identityHashCode(sensor5.getMetricService())
 			System.identityHashCode(metricService)==System.identityHashCode(sensor6.getMetricService())
 	}
+
+	def "When anidate more than one sensor stack then the names must be accumulated"() {
+		println(">>>>> AbstractStackSensorSpec >>>> When anidate more than one sensor stack then the names must be accumulated")
+
+		given:
+			AbstractStackSensor.CURRENT_NAME.set(null)
+
+		when:
+			def sensor1=DoubleStackSensor.get("name{}",1)
+			def sensor2=DoubleStackSensor.get("name{}",2)
+			def sensor3=DoubleStackSensor.get("name{}",3)
+			sensor3.close()
+			def sensor4=DoubleStackSensor.get("name{}",4)
+			sensor4.close()
+			sensor2.close()
+			def sensor5=DoubleStackSensor.get("name{}",5)
+			sensor5.close()
+			sensor1.close()
+			def sensor6=DoubleStackSensor.get("name{}",6)
+			def sensor7=DoubleStackSensor.get("name{}",7)
+			def sensor8=DoubleStackSensor.get("name{}",8)
+			sensor7.close()
+			def sensor9=DoubleStackSensor.get("name{}",9)
+
+		then:
+			sensor1.getName()=="name1"
+			sensor2.getName()=="name1.name2"
+			sensor3.getName()=="name1.name2.name3"
+			sensor4.getName()=="name1.name2.name4"
+			sensor5.getName()=="name1.name5"
+			sensor6.getName()=="name6"
+			sensor7.getName()=="name6.name7"
+			sensor8.getName()=="name6.name7.name8"
+			sensor9.getName()=="name6.name7.name9"
+			
+		cleanup:
+			AbstractStackSensor.CURRENT_NAME.set(null)
+	}
 }
 

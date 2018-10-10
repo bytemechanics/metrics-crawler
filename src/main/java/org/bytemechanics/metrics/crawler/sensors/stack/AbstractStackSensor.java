@@ -21,7 +21,9 @@ import org.bytemechanics.metrics.crawler.MetricsService;
 import org.bytemechanics.metrics.crawler.sensors.AbstractSensor;
 
 /**
- *
+ * Manual abstract base class for sensors extends AbstractStackSensor adding capacity to stack the sensor names automatically
+ * This means that the final sensor name will be the accumulation of the previous open sensors in the same thread separated by dot (.)
+ * @see AbstractSensor
  * @author afarre
  * @param <TYPE>
  */
@@ -31,6 +33,15 @@ public abstract class AbstractStackSensor<TYPE> extends AbstractSensor<TYPE> {
 
 	private final String segment;
 	
+	/** 
+	 * Abstract sensor constructor with the given parameters the sensor name will be the accumulation of the previous open sensors in the same thread separated by dot (.)
+	 * @param _reducer reducer for this sensor (mandatory)
+	 * @param _service metrics metricService (optional) if no provided, a singleton instance of DefaultMetricsServiceImpl is created
+	 * @param _name metric name (mandatory)
+	 * @param _args placeholders for metric name (optional)
+	 * @throws NullPointerException if metricsServiceSupplier returns null instance or _name is null
+	 * @see AbstractSensor#AbstractSensor(org.bytemechanics.metrics.crawler.MeasureReducer, java.util.Optional, java.lang.String, java.lang.Object...) 
+	 */
 	protected AbstractStackSensor(final MeasureReducer<TYPE> _reducer,final Optional<MetricsService> _service,final String _name,final Object... _args){
 		super(_reducer,_service, _name, _args);
 		this.segment=this.name;
@@ -41,6 +52,10 @@ public abstract class AbstractStackSensor<TYPE> extends AbstractSensor<TYPE> {
 		AbstractStackSensor.CURRENT_NAME.set(this.name);
 	}
 
+	/**
+	 * Close the sensor and remove the name from the sensors stack
+	 * @see AbstractSensor#close() 
+	 */
 	@Override
 	public void close() {
 		super.close();

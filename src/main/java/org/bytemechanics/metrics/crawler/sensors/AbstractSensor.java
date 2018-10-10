@@ -27,7 +27,7 @@ import org.bytemechanics.metrics.crawler.internal.MetricsServiceSingleton;
 import org.bytemechanics.metrics.crawler.internal.commons.string.SimpleFormat;
 
 /**
- * Master abstract base class for sensors implements AutoCloseable in order to be usable as try-with-resource structure
+ * Master abstract base class for sensors, implements AutoCloseable in order to be usable as try-with-resource structure
  * @param <TYPE> type of this sensor
  * @see AutoCloseable
  * @author afarre
