@@ -12,6 +12,17 @@
             </activatedProfiles>
         </action>
         <action>
+            <actionName>CUSTOM-Update Javadoc</actionName>
+            <displayName>Update Javadoc</displayName>
+            <goals>
+                <goal>clean</goal>
+                <goal>deploy</goal>
+            </goals>
+            <activatedProfiles>
+                <activatedProfile>javadoc</activatedProfile>
+            </activatedProfiles>
+        </action>
+        <action>
             <actionName>CUSTOM-SonarCloud</actionName>
             <displayName>SonarCloud</displayName>
             <goals>
@@ -19,12 +30,6 @@
                 <goal>org.jacoco:jacoco-maven-plugin:prepare-agent</goal>
                 <goal>package</goal>
                 <goal>sonar:sonar</goal>
-                
-                
-                
-                
-                
-                
             </goals>
             <properties>
                 <sonar.host.url>https://sonarcloud.io</sonar.host.url>

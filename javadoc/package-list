@@ -1,0 +1,7 @@
+org.bytemechanics.metrics.crawler
+org.bytemechanics.metrics.crawler.beans
+org.bytemechanics.metrics.crawler.exceptions
+org.bytemechanics.metrics.crawler.impl
+org.bytemechanics.metrics.crawler.internal
+org.bytemechanics.metrics.crawler.sensors
+org.bytemechanics.metrics.crawler.sensors.stack
