@@ -72,13 +72,27 @@ public class LongSensor extends AbstractManualSensor<Long> {
 	 *	_name: "{}_name_{}"
 	 *	_args: ["prefix","suffix"]
 	 *	final name: prefix_name_suffix</pre>
-	 * @param _measure Optional of long that will be the measure to use (can be null or Optional.empty())
+	 * @param _measure long that will be the measure to use (can be null)
 	 * @param _name name of the measure
 	 * @param _args arguments to replace to the measure name
 	 * @return long sensor with the replaced name and initialized with the given measure
 	 */
 	public static LongSensor get(final Long _measure,final String _name,final Object... _args){
 		return new LongSensor(Optional.ofNullable(_measure),_name,_args);
+	}
+	/**
+	 * Create a measure for the metric with the given name<br>
+	 * Example:<pre>
+	 *	_name: "{}_name_{}"
+	 *	_args: ["prefix","suffix"]
+	 *	final name: prefix_name_suffix</pre>
+	 * @param _measure long that will be the measure to use
+	 * @param _name name of the measure
+	 * @param _args arguments to replace to the measure name
+	 */
+	public static void measure(final Long _measure,final String _name,final Object... _args){
+		LongSensor.get(_measure,_name,_args)
+					.close();
 	}
 }
 

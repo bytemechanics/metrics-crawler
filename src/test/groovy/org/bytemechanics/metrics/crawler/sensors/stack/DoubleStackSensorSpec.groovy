@@ -219,7 +219,7 @@ class DoubleStackSensorSpec extends Specification{
 			1 * metricsService.registerMeasure('name',!null,measure,MeasureReducers.DOUBLE.get(Double.class), [])
 			
 		cleanup:
-			AbstractStackSensor.registerMetricsServiceSupplier({ -> MetricsServiceSingleton.getInstance().getMetricsService()})
+			DoubleStackSensor.registerMetricsServiceSupplier({ -> MetricsServiceSingleton.getInstance().getMetricsService()})
 
 		where:
 			name		| args					| measure	
@@ -234,7 +234,7 @@ class DoubleStackSensorSpec extends Specification{
 
 	@Unroll
 	def "When close() sensor with name:#name,args:#args and null measure then no registration should take part"(){
-		println(">>>>> DoubleStackSensorSpec >>>> When close() sensor with name:#name,args:#args and null measure then no registration should take part")
+		println(">>>>> DoubleStackSensorSpec >>>> When close() sensor with name:$name,args:$args and null measure then no registration should take part")
 
 		given:
 			def metricsService = Mock(MetricsService.class)
@@ -242,20 +242,74 @@ class DoubleStackSensorSpec extends Specification{
 			DoubleStackSensor.registerMetricsServiceSupplier({ -> metricsService})
 
 		when:
-			def obj=DoubleStackSensor.get(measure,name,(Object[])args)
+			def obj=DoubleStackSensor.get(null,name,(Object[])args)
 			obj.close()
 			
 		then:
-			0 * metricsService.registerMeasure('name',!null,measure,MeasureReducers.DOUBLE.get(Double.class), [])
+			0 * metricsService.registerMeasure('name',!null,null,MeasureReducers.DOUBLE.get(Double.class), [])
 			
 		cleanup:
-			AbstractStackSensor.registerMetricsServiceSupplier({ -> MetricsServiceSingleton.getInstance().getMetricsService()})
+			DoubleStackSensor.registerMetricsServiceSupplier({ -> MetricsServiceSingleton.getInstance().getMetricsService()})
+
+		where:
+			name		| args					
+			"a"			| [1,2.0d,"string"]		
+			"{}b{}c{}"	| []					
+			"{}b{}c{}"	| [1]					
+	}	
+
+	@Unroll
+	def "When measure(#measure,#name,#args) metric must add to metricservice the registered measure"(){
+		println(">>>>> DoubleStackSensorSpec >>>> When measure($measure,$name,$args) metric must add to metricservice the registered measure")
+
+		given:
+			def metricsService = Mock(MetricsService.class)
+			metricsService.buildMetricName(name,args) >> "name"
+			DoubleStackSensor.registerMetricsServiceSupplier({ -> metricsService})
+
+		when:
+			DoubleStackSensor.measure(measure,name,(Object[])args)
+			
+		then:
+			1 * metricsService.registerMeasure('name',!null,measure,MeasureReducers.DOUBLE.get(Double.class), [])
+			
+		cleanup:
+			DoubleStackSensor.registerMetricsServiceSupplier({ -> MetricsServiceSingleton.getInstance().getMetricsService()})
 
 		where:
 			name		| args					| measure	
-			"a"			| [1,2.0d,"string"]		| null		
-			"{}b{}c{}"	| []					| null		
-			"{}b{}c{}"	| [1]					| null		
+			"a"			| [1,2.0d,"string"]		| 1.0d		
+			"{}b{}c{}"	| []					| 2.0d		
+			"{}b{}c{}"	| [1,2.0d]				| 3.0d		
+			"{}b{}c{}"	| [1,2.0d,"string"]		| 4.0d		
+			"{}b{}c{}"	| [null,2.0d,"string"]	| 5.1d		
+			"{}b{}c{}"	| [1,null,"string"]		| 5.2d		
+			"{}b{}c{}"	| [1,2.0d,null]			| 5.3d		
+	}	
+
+	@Unroll
+	def "When measure(null,#name,#args) then no registration should take part"(){
+		println(">>>>> DoubleStackSensorSpec >>>> When measure(null,$name,$args) then no registration should take part")
+
+		given:
+			def metricsService = Mock(MetricsService.class)
+			metricsService.buildMetricName(name,args) >> "name"
+			DoubleStackSensor.registerMetricsServiceSupplier({ -> metricsService})
+
+		when:
+			DoubleStackSensor.measure(null,name,(Object[])args)
+			
+		then:
+			0 * metricsService.registerMeasure('name',!null,null,MeasureReducers.DOUBLE.get(Double.class), [])
+			
+		cleanup:
+			DoubleStackSensor.registerMetricsServiceSupplier({ -> MetricsServiceSingleton.getInstance().getMetricsService()})
+
+		where:
+			name		| args				
+			"a"			| [1,2.0d,"string"]	
+			"{}b{}c{}"	| []				
+			"{}b{}c{}"	| [1]				
 	}	
 }
 

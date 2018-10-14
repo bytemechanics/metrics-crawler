@@ -71,13 +71,27 @@ public class DoubleSensor extends AbstractManualSensor<Double> {
 	 *	_name: "{}_name_{}"
 	 *	_args: ["prefix","suffix"]
 	 *	final name: prefix_name_suffix</pre>
-	 * @param _measure Optional of double that will be the measure to use (can be null or Optional.empty())
+	 * @param _measure double that will be the measure to use (can be null)
 	 * @param _name name of the measure
 	 * @param _args arguments to replace to the measure name
 	 * @return double sensor with the replaced name and initialized with the given measure
 	 */
 	public static DoubleSensor get(final Double _measure,final String _name,final Object... _args){
 		return new DoubleSensor(Optional.ofNullable(_measure),_name,_args);
+	}
+	/**
+	 * Create a measure for the metric with the given name<br>
+	 * Example:<pre>
+	 *	_name: "{}_name_{}"
+	 *	_args: ["prefix","suffix"]
+	 *	final name: prefix_name_suffix</pre>
+	 * @param _measure double that will be the measure to use
+	 * @param _name name of the measure
+	 * @param _args arguments to replace to the measure name
+	 */
+	public static void measure(final Double _measure,final String _name,final Object... _args){
+		DoubleSensor.get(_measure,_name,_args)
+					.close();
 	}
 }
 

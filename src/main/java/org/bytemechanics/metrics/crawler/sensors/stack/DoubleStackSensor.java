@@ -103,5 +103,20 @@ public class DoubleStackSensor extends AbstractManualStackSensor<Double> {
 	public static DoubleStackSensor get(final Double _measure,final String _name,final Object... _args){
 		return new DoubleStackSensor(Optional.ofNullable(_measure),_name,_args);
 	}
+
+	/**
+	 * Create a measure for the metric with the given name<br>
+	 * Example:<pre>
+	 *	_name: "{}_name_{}"
+	 *	_args: ["prefix","suffix"]
+	 *	final name: prefix_name_suffix</pre>
+	 * @param _measure double that will be the measure to use
+	 * @param _name name of the measure
+	 * @param _args arguments to replace to the measure name
+	 */
+	public static void measure(final Double _measure,final String _name,final Object... _args){
+		DoubleStackSensor.get(_measure,_name,_args)
+					.close();
+	}
 }
 

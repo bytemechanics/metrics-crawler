@@ -197,8 +197,8 @@ class LongStackSensorSpec extends Specification{
 			"{}b{}c{}"	| [1,2.0d]				| 3l		| 4l
 			"{}b{}c{}"	| [1,2.0d,"string"]		| 4l		| 5l
 			"{}b{}c{}"	| [null,2.0d,"string"]	| 5l		| 6l
-			"{}b{}c{}"	| [1,null,"string"]		| 5l		| 6l
-			"{}b{}c{}"	| [1,2.0d,null]			| 5l		| 6l	
+			"{}b{}c{}"	| [1,null,"string"]		| 6l		| 7l
+			"{}b{}c{}"	| [1,2.0d,null]			| 7l		| 8l	
 	}	
 
 	@Unroll
@@ -218,7 +218,7 @@ class LongStackSensorSpec extends Specification{
 			1 * metricsService.registerMeasure('name',!null,measure,MeasureReducers.LONG.get(Long.class), [])
 			
 		cleanup:
-			AbstractStackSensor.registerMetricsServiceSupplier({ -> MetricsServiceSingleton.getInstance().getMetricsService()})
+			LongStackSensor.registerMetricsServiceSupplier({ -> MetricsServiceSingleton.getInstance().getMetricsService()})
 
 		where:
 			name		| args					| measure	
@@ -227,13 +227,13 @@ class LongStackSensorSpec extends Specification{
 			"{}b{}c{}"	| [1,2.0d]				| 3l		
 			"{}b{}c{}"	| [1,2.0d,"string"]		| 4l		
 			"{}b{}c{}"	| [null,2.0d,"string"]	| 5l		
-			"{}b{}c{}"	| [1,null,"string"]		| 5l		
-			"{}b{}c{}"	| [1,2.0d,null]			| 5l		
+			"{}b{}c{}"	| [1,null,"string"]		| 6l		
+			"{}b{}c{}"	| [1,2.0d,null]			| 7l		
 	}	
 
 	@Unroll
 	def "When close() sensor with name:#name,args:#args and null measure then no registration should take part"(){
-		println(">>>>> LongStackSensorSpec >>>> When close() sensor with name:#name,args:#args and null measure then no registration should take part")
+		println(">>>>> LongStackSensorSpec >>>> When close() sensor with name:$name,args:$args and null measure then no registration should take part")
 
 		given:
 			def metricsService = Mock(MetricsService.class)
@@ -241,20 +241,74 @@ class LongStackSensorSpec extends Specification{
 			LongStackSensor.registerMetricsServiceSupplier({ -> metricsService})
 
 		when:
-			def obj=LongStackSensor.get(measure,name,(Object[])args)
+			def obj=LongStackSensor.get(null,name,(Object[])args)
 			obj.close()
 			
 		then:
-			0 * metricsService.registerMeasure('name',!null,measure,MeasureReducers.LONG.get(Long.class), [])
+			0 * metricsService.registerMeasure('name',!null,null,MeasureReducers.LONG.get(Long.class), [])
 			
 		cleanup:
-			AbstractStackSensor.registerMetricsServiceSupplier({ -> MetricsServiceSingleton.getInstance().getMetricsService()})
+			LongStackSensor.registerMetricsServiceSupplier({ -> MetricsServiceSingleton.getInstance().getMetricsService()})
+
+		where:
+			name		| args					
+			"a"			| [1,2.0d,"string"]		
+			"{}b{}c{}"	| []					
+			"{}b{}c{}"	| [1]					
+	}	
+
+	@Unroll
+	def "When measure(#measure,#name,#args) metric must add to metricservice the registered measure"(){
+		println(">>>>> LongStackSensorSpec >>>> When measure($measure,$name,$args) metric must add to metricservice the registered measure")
+
+		given:
+			def metricsService = Mock(MetricsService.class)
+			metricsService.buildMetricName(name,args) >> "name"
+			LongStackSensor.registerMetricsServiceSupplier({ -> metricsService})
+
+		when:
+			LongStackSensor.measure(measure,name,(Object[])args)
+			
+		then:
+			1 * metricsService.registerMeasure('name',!null,measure,MeasureReducers.LONG.get(Double.class), [])
+			
+		cleanup:
+			LongStackSensor.registerMetricsServiceSupplier({ -> MetricsServiceSingleton.getInstance().getMetricsService()})
 
 		where:
 			name		| args					| measure	
-			"a"			| [1,2.0d,"string"]		| null		
-			"{}b{}c{}"	| []					| null		
-			"{}b{}c{}"	| [1]					| null		
+			"a"			| [1,2.0d,"string"]		| 1l		
+			"{}b{}c{}"	| []					| 2l		
+			"{}b{}c{}"	| [1,2.0d]				| 3l		
+			"{}b{}c{}"	| [1,2.0d,"string"]		| 4l		
+			"{}b{}c{}"	| [null,2.0d,"string"]	| 5l		
+			"{}b{}c{}"	| [1,null,"string"]		| 6l		
+			"{}b{}c{}"	| [1,2.0d,null]			| 7l		
 	}	
+
+	@Unroll
+	def "When measure(null,#name,#args) then no registration should take part"(){
+		println(">>>>> LongStackSensorSpec >>>> When measure(null,$name,$args) then no registration should take part")
+
+		given:
+			def metricsService = Mock(MetricsService.class)
+			metricsService.buildMetricName(name,args) >> "name"
+			LongStackSensor.registerMetricsServiceSupplier({ -> metricsService})
+
+		when:
+			LongStackSensor.measure(null,name,(Object[])args)
+			
+		then:
+			0 * metricsService.registerMeasure('name',!null,null,MeasureReducers.LONG.get(Double.class), [])
+			
+		cleanup:
+			LongStackSensor.registerMetricsServiceSupplier({ -> MetricsServiceSingleton.getInstance().getMetricsService()})
+
+		where:
+			name		| args				
+			"a"			| [1,2.0d,"string"]	
+			"{}b{}c{}"	| []				
+			"{}b{}c{}"	| [1]				
+	}
 }
 
