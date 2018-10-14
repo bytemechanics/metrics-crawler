@@ -12,22 +12,31 @@ import org.bytemechanics.metrics.crawler.beans.MetricSnapshot;
 import org.bytemechanics.metrics.crawler.internal.Metric;
 
 /**
- * Default Metrics service implementation
+ * Default Metrics service implementation stores only the latest N samples
  * @see MetricsService
  * @author afarre
  * @since 1.0.0
  */
 public class DefaultMetricsServiceImpl implements MetricsService {
 
+	/** Default sammpling size (if no specified) */
 	public static final int DEFAULT_SAMPLING_SIZE=128;
 
 	private final int samplingSize;
 	private final Map<String,Metric> metrics;
 	
 	
+	/**
+	 * Creates a default sampling service instance with the default sampling size
+	 * @see DefaultMetricsServiceImpl#DEFAULT_SAMPLING_SIZE
+	 */
 	public DefaultMetricsServiceImpl(){
 		this(DEFAULT_SAMPLING_SIZE);
 	}
+	/**
+	 * Creates a default sampling service with the give _samplingSize
+	 * @param _samplingSize sampling size
+	 */
 	public DefaultMetricsServiceImpl(final int _samplingSize){
 		this.metrics=new ConcurrentHashMap<>(64);
 		this.samplingSize=_samplingSize;

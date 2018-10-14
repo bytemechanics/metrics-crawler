@@ -19,6 +19,7 @@ import org.bytemechanics.metrics.crawler.MetricsService;
 import org.bytemechanics.metrics.crawler.impl.DefaultMetricsServiceImpl;
 
 /**
+ * Default singleton container for the metrics service. Used to store the metric service if no external singleton container exist.
  * @author afarre
  * @since 1.0.0
  */
@@ -32,10 +33,10 @@ public class MetricsServiceSingleton {
 		this.metricsService=new DefaultMetricsServiceImpl();
 	}
 
-	public MetricsService getMetricsService() {
-		return metricsService;
-	}
-
+	/**
+	 * Returns always the same instance of this metric service singleton creating new one if it's the first time
+	 * @return always the same instance of this metric service singleton
+	 */
 	public static final MetricsServiceSingleton getInstance(){
 		
 		MetricsServiceSingleton reply;
@@ -50,5 +51,13 @@ public class MetricsServiceSingleton {
 		}
 		
 		return reply;
+	}
+
+	/**
+	 * Returns always the same metric service not null instance
+	 * @return always the same metric service not null instance
+	 */
+	public MetricsService getMetricsService() {
+		return metricsService;
 	}
 }

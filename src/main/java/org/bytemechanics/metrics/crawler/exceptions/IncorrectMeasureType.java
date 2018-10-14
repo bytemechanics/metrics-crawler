@@ -67,6 +67,7 @@ public class IncorrectMeasureType extends RuntimeException{
 		return wrongType;
 	}
 
+	/** @see Object#hashCode()  */
 	@Override
 	public int hashCode() {
 		int hash = 5;
@@ -76,6 +77,7 @@ public class IncorrectMeasureType extends RuntimeException{
 		return hash;
 	}
 
+	/** @see Object#equals(java.lang.Object)   */
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj) {

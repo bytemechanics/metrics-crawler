@@ -18,17 +18,20 @@ package org.bytemechanics.metrics.crawler.sensors.stack;
 import java.util.Optional;
 import org.bytemechanics.metrics.crawler.MeasureReducer;
 import org.bytemechanics.metrics.crawler.MetricsService;
+import org.bytemechanics.metrics.crawler.impl.DefaultMetricsServiceImpl;
+import org.bytemechanics.metrics.crawler.sensors.AbstractSensor;
 
 /**
-/**
- * Manual abstract base class for sensors extends AbstractStackSensor adding capacity to register a measure manually
- * @param <TYPE> type of this sensor
- * @see AbstractSensor
+ * Manual abstract base class for sensors extends AbstractStackSensor adding capacity to register a measure manually, additionally to the capacity of stack metric names.
+ * This means that the final sensor name will be the accumulation of the previous open sensors in the same thread separated by dot (.)
+ * @param <TYPE> sensor type
+ * @see AbstractStackSensor
  * @author afarre
  * @since 1.0.0
  */
 public abstract class AbstractManualStackSensor<TYPE extends Number> extends AbstractStackSensor<TYPE>{
 	
+	/** Stores the measured value between the instantiation and close() */
 	protected TYPE measure;
 	
 	/**

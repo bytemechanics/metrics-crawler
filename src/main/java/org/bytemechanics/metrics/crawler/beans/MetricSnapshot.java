@@ -28,7 +28,19 @@ public class MetricSnapshot<TYPE>{
 	private final LocalDateTime lastOccurrence;
 	private final LocalDateTime snapshotTimestamp;
 
-	
+	/**
+	 * Constructor of metric snapshot
+	 * @param _measureReducer measure reducer used to create this metric snaphot
+	 * @param _name metric name
+	 * @param _accumulatedSamples accumulation of all samples used to create this metric
+	 * @param _samplingSize sampling size used to generate this metric snapshot
+	 * @param _totalHits total number of measures since metric creation
+	 * @param _maxMeasure maximum measure get of all samples used
+	 * @param _minMeasure minimum measure get of all samples used
+	 * @param _averageMeasure average measure value over all samples used
+	 * @param _lastMeasure last taken measure
+	 * @param _lastOccurrence timestamp of the last taken measure
+	 */
 	protected MetricSnapshot(final MeasureReducer<TYPE> _measureReducer,final String _name,final TYPE _accumulatedSamples,final long _samplingSize,final long _totalHits,final TYPE _maxMeasure,final TYPE _minMeasure,final TYPE _averageMeasure,final TYPE _lastMeasure,final LocalDateTime _lastOccurrence) {
 		this.measureReducer=_measureReducer;
 		this.name = _name;
@@ -407,6 +419,14 @@ public class MetricSnapshot<TYPE>{
 	public static <T> MetricSnapshotBuilder builder(final MeasureReducer<T> _measureReducer,final MetricSnapshot<T> _metricSnapshot) {
 		return new MetricSnapshotBuilder(_measureReducer,_metricSnapshot);
 	}	
+
+	/**
+	 * Null secure metric name comparison 
+	 * @param _metric1 left metric to compare
+	 * @param _metric2 right metric to compare
+	 * @return the metric name comparison value using the string compareTo considering always greater not null
+	 * @see String#compareTo(java.lang.String) 
+	 */
 	public static int compareNames(final MetricSnapshot _metric1,final MetricSnapshot _metric2) {
 		return Optional.ofNullable(_metric1)
 						.map(MetricSnapshot::getName)

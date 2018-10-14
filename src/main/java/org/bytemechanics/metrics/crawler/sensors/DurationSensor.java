@@ -18,29 +18,61 @@ package org.bytemechanics.metrics.crawler.sensors;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Optional;
-import org.bytemechanics.metrics.crawler.MetricsService;
 import org.bytemechanics.metrics.crawler.internal.MeasureReducers;
 
 /**
- *
+ * Duration sensor measures time between sensor creation and close()<br>
+ * Usage:<pre>
+ * {@code try(DurationSensor sensor=DurationSensor.get("myMeasure{}",1)){
+ *		(...)
+ *  }
+ * }</pre>
+ * @see AbstractSensor
+ * @see Duration
  * @author afarre
+ * @since 1.0.0
  */
 public class DurationSensor extends AbstractSensor<Duration>{
 
+	/** Measure start time */
 	protected final Instant startTime;
 	
-	protected DurationSensor(final Optional<MetricsService> _service,final String _name,final Object... _args){
-		super(MeasureReducers.DURATION.get(Duration.class),_service, _name, _args);
+	/**
+	 * Builds a duration sensor with the name build from the given name and arguments and with the given measure<br>
+	 * Example:<pre>
+	 *	_name: "{}_name_{}"
+	 *	_args: ["prefix","suffix"]
+	 *	final name: prefix_name_suffix</pre>
+	 * @param _name name of the measure
+	 * @param _args arguments to replace to the measure name
+	 */
+	protected DurationSensor(final String _name,final Object... _args){
+		super(MeasureReducers.DURATION.get(Duration.class),Optional.empty(), _name, _args);
 		this.startTime=Instant.now();
 	}
 
+	/**
+	 * Calculate the durantion from the creation time to this instant
+	 * @return duration time between creation instance and now
+	 * @see AbstractSensor#getMeasure() 
+	 */
 	@Override
 	public Duration getMeasure() {
 		return Duration.between(startTime, Instant.now());
 	}
 
+	/**
+	 * Builds a duration sensor with the name build from the given name and arguments<br>
+	 * Example:<pre>
+	 *	_name: "{}_name_{}"
+	 *	_args: ["prefix","suffix"]
+	 *	final name: prefix_name_suffix</pre>
+	 * @param _name name of the measure
+	 * @param _args arguments to replace to the measure name
+	 * @return duration sensor with the replaced name
+	 */
 	public static DurationSensor get(final String _name,final Object... _args){
-		return new DurationSensor(Optional.empty(),_name,_args);
+		return new DurationSensor(_name,_args);
 	}
 }
 

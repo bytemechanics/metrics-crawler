@@ -21,11 +21,11 @@ import org.bytemechanics.metrics.crawler.MetricsService;
 import org.bytemechanics.metrics.crawler.sensors.AbstractSensor;
 
 /**
- * Manual abstract base class for sensors extends AbstractStackSensor adding capacity to stack the sensor names automatically
+ * Manual abstract base class for sensors extends AbstractStackSensor adding capacity to stack metric names automatically
  * This means that the final sensor name will be the accumulation of the previous open sensors in the same thread separated by dot (.)
+ * @param <TYPE> sensor type
  * @see AbstractSensor
  * @author afarre
- * @param <TYPE>
  */
 public abstract class AbstractStackSensor<TYPE> extends AbstractSensor<TYPE> {
 

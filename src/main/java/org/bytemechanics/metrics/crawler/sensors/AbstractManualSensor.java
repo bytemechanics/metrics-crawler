@@ -18,6 +18,7 @@ package org.bytemechanics.metrics.crawler.sensors;
 import java.util.Optional;
 import org.bytemechanics.metrics.crawler.MeasureReducer;
 import org.bytemechanics.metrics.crawler.MetricsService;
+import org.bytemechanics.metrics.crawler.impl.DefaultMetricsServiceImpl;
 
 /**
  * Manual abstract base class for sensors extends AbstractSensor adding capacity to register a measure manually
@@ -28,6 +29,7 @@ import org.bytemechanics.metrics.crawler.MetricsService;
  */
 public abstract class AbstractManualSensor<TYPE extends Number> extends AbstractSensor<TYPE>{
 	
+	/** Stores the measured value between the instantiation and close() */
 	protected TYPE measure;
 	
 	/**

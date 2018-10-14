@@ -35,12 +35,18 @@ import org.bytemechanics.metrics.crawler.internal.commons.string.SimpleFormat;
  */
 public abstract class AbstractSensor<TYPE> implements AutoCloseable{
 
+	/** Supplier function to retrieve the current MetricService instance to use */
 	protected static Supplier<MetricsService> metricsServiceSupplier=MetricsServiceSingleton.getInstance()::getMetricsService;
 
+	/** Measured metric name */
 	protected String name;
+	/** The timestamp when this sensor started measure */
 	protected final LocalDateTime timestamp;
+	/** The current skip status (if this measure must not be registered) */
 	protected boolean skip;
+	/** The current metrics service that will be used in this sensor instance */
 	protected MetricsService metricService;
+	/** The reducer to use with this sensor */
 	protected MeasureReducer<TYPE> reducer;
 	
 
