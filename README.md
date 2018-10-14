@@ -12,10 +12,12 @@ estatistics:
 * Minimum measure
 * Average measure
 * Last measure occurrence
+
 And this measures can be:
 * Double
 * Long
 * Duration (elapsed time)
+
 All sensors implements Autocloseable in order to reduce boilerplate when taking measures.
 The library allows create metric names manually or tracking your sensor stack if you are using imperative programming (As the library uses ThreadLocal to stack the sensors if you use multithreading you can have unexpected results)
 
