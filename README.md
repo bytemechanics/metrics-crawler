@@ -25,7 +25,8 @@ When you have performance problems in production environment and don't know wher
 ## Quick start
 (Please read our [Javadoc] (javadoc/index.html) for further information)
 1. First of all include the Jar file in your compile and execution classpath.
-   *Maven*
+   
+   **Maven**
    ```xml
    <dependency>
 	   <groupId>org.bytemechanics</groupId>
@@ -33,7 +34,7 @@ When you have performance problems in production environment and don't know wher
 	   <version>X.X.X</version>
    </dependency>
    ```
-   *Graddle*
+   **Graddle**
    ```groovy
    dependencies {
        compile 'org.bytemechanics:metrics-crawler:X.X.X'
@@ -44,57 +45,54 @@ When you have performance problems in production environment and don't know wher
    AbstractSensor.registerMetricsServiceSupplier([your supplier]);
    ```
 2. Start measuring 
-   
    2.1. Option1: With manual naming
-
-```Java
-import org.bytemechanics.metrics.crawler.sensors.DoubleSensor;
-import org.bytemechanics.metrics.crawler.sensors.LongSensor;
-import org.bytemechanics.metrics.crawler.sensors.DurationSensor;
-(...)
-try(DoubleSensor sensor1=DoubleSensor.get("myName")){
-	sensor1=2.0d;
-	(...)
-}
-(...)
-try(LongSensor sensor1=LongSensor.get("my{}Name{}","long",1)){
-	sensor1=2l;
-	(...)
-	try(LongSensor sensor2=LongSensor.get("my{}Name{}.my{}Name{}","long",1,"long",2)){
-		sensor2=5l;
-		(...)
-	}
-}
-(...)
-try(DurationSensor sensor1=DurationSensor.get("{}myName{}","duration","sensor")){
-	(...)
-}
-```
-
+        ```Java
+        import org.bytemechanics.metrics.crawler.sensors.DoubleSensor;
+        import org.bytemechanics.metrics.crawler.sensors.LongSensor;
+        import org.bytemechanics.metrics.crawler.sensors.DurationSensor;
+        (...)
+        try(DoubleSensor sensor1=DoubleSensor.get("myName")){
+        	sensor1=2.0d;
+        	(...)
+        }
+        (...)
+        try(LongSensor sensor1=LongSensor.get("my{}Name{}","long",1)){
+        	sensor1=2l;
+        	(...)
+        	try(LongSensor sensor2=LongSensor.get("my{}Name{}.my{}Name{}","long",1,"long",2)){
+        		sensor2=5l;
+        		(...)
+        	}
+        }
+        (...)
+        try(DurationSensor sensor1=DurationSensor.get("{}myName{}","duration","sensor")){
+        	(...)
+        }
+        ```
    2.2. Option2: With stack naming (the same result)
-```Java
-import org.bytemechanics.metrics.crawler.sensors.stack.DoubleStackSensor;
-import org.bytemechanics.metrics.crawler.sensors.stack.LongStackSensor;
-import org.bytemechanics.metrics.crawler.sensors.stack.DurationStackSensor;
-(...)
-try(DoubleStackSensor sensor1=DoubleStackSensor.get("myName")){
-	sensor1=2.0d;
-	(...)
-}
-(...)
-try(LongStackSensor sensor1=LongStackSensor.get("my{}Name{}","long",1)){
-	sensor1=2l;
-	(...)
-	try(LongStackSensor sensor2=LongStackSensor.get("my{}Name{}","long",2)){
-		sensor2=5l;
-		(...)
-	}
-}
-(...)
-try(DurationStackSensor sensor1=DurationStackSensor.get("{}myName{}","duration","sensor")){
-	(...)
-}
-```
+        ```Java
+        import org.bytemechanics.metrics.crawler.sensors.stack.DoubleStackSensor;
+        import org.bytemechanics.metrics.crawler.sensors.stack.LongStackSensor;
+        import org.bytemechanics.metrics.crawler.sensors.stack.DurationStackSensor;
+        (...)
+        try(DoubleStackSensor sensor1=DoubleStackSensor.get("myName")){
+        	sensor1=2.0d;
+        	(...)
+        }
+        (...)
+        try(LongStackSensor sensor1=LongStackSensor.get("my{}Name{}","long",1)){
+        	sensor1=2l;
+        	(...)
+        	try(LongStackSensor sensor2=LongStackSensor.get("my{}Name{}","long",2)){
+        		sensor2=5l;
+        		(...)
+        	}
+        }
+        (...)
+        try(DurationStackSensor sensor1=DurationStackSensor.get("{}myName{}","duration","sensor")){
+        	(...)
+        }
+        ```
 
 
 
