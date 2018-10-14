@@ -28,11 +28,11 @@ When you have performance problems in production environment and don't know wher
 
 **Maven**
 ```xml
-	<dependency>
-		<groupId>org.bytemechanics</groupId>
-		<artifactId>metrics-crawler</artifactId>
-		<version>X.X.X</version>
-	</dependency>
+<dependency>
+	<groupId>org.bytemechanics</groupId>
+	<artifactId>metrics-crawler</artifactId>
+	<version>X.X.X</version>
+</dependency>
 ```
 **Graddle**
 ```groovy
@@ -40,12 +40,12 @@ dependencies {
     compile 'org.bytemechanics:metrics-crawler:X.X.X'
 }
 ```
-1.1. Optionally register external MetricService supplier at application startup, take in account that expects this supplier always return the same instance (only necessary if you want to use a singleton distinct from the default one)
+   1.1. Optionally register external MetricService supplier at application startup, take in account that expects this supplier always return the same instance (only necessary if you want to use a singleton distinct from the default one)
 ```Java
 AbstractSensor.registerMetricsServiceSupplier([your supplier]);
 ```
 2. Start measuring 
-2.1. Option1: With manual naming
+   2.1. Option1: With manual naming
 ```Java
 import org.bytemechanics.metrics.crawler.sensors.DoubleSensor;
 import org.bytemechanics.metrics.crawler.sensors.LongSensor;
@@ -69,7 +69,7 @@ try(DurationSensor sensor1=DurationSensor.get("{}myName{}","duration","sensor"))
 	(...)
 }
 ```
-2.2. Option2: With stack naming (the same result)
+   2.2. Option2: With stack naming (the same result)
 ```Java
 import org.bytemechanics.metrics.crawler.sensors.stack.DoubleStackSensor;
 import org.bytemechanics.metrics.crawler.sensors.stack.LongStackSensor;
