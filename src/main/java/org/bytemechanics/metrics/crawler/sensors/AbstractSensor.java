@@ -123,9 +123,9 @@ public abstract class AbstractSensor<TYPE> implements AutoCloseable{
 	protected final void registerMeasure(final TYPE _measure){
 
 		try{
-			this.metricService.registerMeasure(this.name,this.timestamp, getMeasure(),this.reducer);
+			this.metricService.registerMeasure(this.name,this.timestamp, _measure,this.reducer);
 		}catch(Exception e){
-			Logger.getLogger(AbstractSensor.class.getName()).log(Level.WARNING,e,() -> SimpleFormat.format("measure::{}::resgistry::failed::{}",this.name ,e.getMessage()));
+			Logger.getLogger(AbstractSensor.class.getName()).log(Level.WARNING,e,() -> SimpleFormat.format("measure::{}::value::{}::resgistry::failed::{}",this.name ,_measure,e.getMessage()));
 		}
 	}
 	
