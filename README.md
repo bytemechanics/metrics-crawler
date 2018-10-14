@@ -45,6 +45,7 @@ When you have performance problems in production environment and don't know wher
    AbstractSensor.registerMetricsServiceSupplier([your supplier]);
    ```
 2. Start measuring 
+
    2.1. Option1: With manual naming
         ```Java
         import org.bytemechanics.metrics.crawler.sensors.DoubleSensor;
