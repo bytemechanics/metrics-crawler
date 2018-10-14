@@ -47,6 +47,7 @@ When you have performance problems in production environment and don't know wher
 2. Start measuring 
 
    2.1. Option1: With manual naming
+
         ```Java
         import org.bytemechanics.metrics.crawler.sensors.DoubleSensor;
         import org.bytemechanics.metrics.crawler.sensors.LongSensor;
@@ -71,6 +72,7 @@ When you have performance problems in production environment and don't know wher
         }
         ```
    2.2. Option2: With stack naming (the same result)
+
         ```Java
         import org.bytemechanics.metrics.crawler.sensors.stack.DoubleStackSensor;
         import org.bytemechanics.metrics.crawler.sensors.stack.LongStackSensor;
