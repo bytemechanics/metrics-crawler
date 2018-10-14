@@ -25,7 +25,7 @@ The library allows create metric names manually or tracking your sensor stack if
 When you have performance problems in production environment and don't know where look, the only way is to have measures directly from real, using sensors allows to identify the bottlenecks in production
 
 ## Quick start
-(Please read our [![Javadoc](javadoc/index.html)] for further information)
+(Please read our [![Javadoc](javadoc/index.html)](javadoc/index.html) for further information)
 1. First of all include the Jar file in your compile and execution classpath.
    
    **Maven**
