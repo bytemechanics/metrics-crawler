@@ -432,7 +432,7 @@ public class MetricSnapshot<TYPE>{
 						.map(MetricSnapshot::getName)
 						.map(leftName -> Optional.ofNullable(_metric2)
 												.map(MetricSnapshot::getName)
-												.map(rightName -> leftName.compareTo(rightName))
+												.map(leftName::compareTo)
 												.orElse(1))
 						.orElseGet(() -> Optional.ofNullable(_metric2)
 												.map(MetricSnapshot::getName)

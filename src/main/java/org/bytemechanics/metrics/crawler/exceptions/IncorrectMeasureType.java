@@ -96,10 +96,7 @@ public class IncorrectMeasureType extends RuntimeException{
 		if (!Objects.equals(this.originalType, other.originalType)) {
 			return false;
 		}
-		if (!Objects.equals(this.wrongType, other.wrongType)) {
-			return false;
-		}
-		return true;
+		return Objects.equals(this.wrongType, other.wrongType);
 	}
 	
 

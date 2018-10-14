@@ -124,7 +124,7 @@ public class Measure<TYPE> {
 	public String toString() {
 		return SimpleFormat.format("Measure[timestamp={}, measureType={}, measure={},reducer={}]",
 									Optional.ofNullable(timestamp).map(val -> val.format(DateTimeFormatter.ISO_DATE_TIME)).orElse("null"),
-									Optional.ofNullable(value).map(val -> val.getClass()).map(val -> val.toString()).orElse("null"),
+									Optional.ofNullable(value).map(Object::getClass).map(Class::toString).orElse("null"),
 									value,
 									reducer);
 	}
