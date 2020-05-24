@@ -23,7 +23,6 @@ import java.util.logging.Logger;
 import java.util.stream.Stream;
 import mockit.Tested;
 import org.bytemechanics.metrics.crawler.impl.DefaultMetricsServiceImpl;
-import org.bytemechanics.metrics.crawler.internal.commons.functional.LambdaUnchecker;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -43,7 +42,7 @@ public class MetricsServiceTest {
 	@BeforeAll
 	public static void setup() throws IOException{
 		System.out.println(">>>>> MetricsServiceTest >>>> setup");
-		try(InputStream inputStream = LambdaUnchecker.class.getResourceAsStream("/logging.properties")){
+		try(InputStream inputStream = MetricsServiceTest.class.getResourceAsStream("/logging.properties")){
 			LogManager.getLogManager().readConfiguration(inputStream);
 		}catch (final IOException e){
 			Logger.getAnonymousLogger().severe("Could not load default logging.properties file");

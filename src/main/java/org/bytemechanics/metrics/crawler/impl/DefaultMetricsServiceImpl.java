@@ -57,9 +57,10 @@ public class DefaultMetricsServiceImpl implements MetricsService {
 	
 	/** @see MetricsService#registerMeasure(java.lang.String, java.time.LocalDateTime, java.lang.Object, org.bytemechanics.metrics.crawler.MeasureReducer, java.lang.Object...)  */
 	@Override
+	@SuppressWarnings("unchecked")
 	public <TYPE> void registerMeasure(final String _name,final LocalDateTime _time,final TYPE _measure,final MeasureReducer<TYPE> _reducer,final Object... _placeholders){
 		Optional.ofNullable(buildMetricName(_name,_placeholders))
-					.map(effectiveName -> this.metrics.computeIfAbsent(effectiveName,name -> new Metric(name, this.samplingSize,_reducer)))
+					.map(effectiveName -> this.metrics.computeIfAbsent(effectiveName,name -> new Metric<>(name, this.samplingSize,_reducer)))
 					.ifPresent(metric -> metric.addMeasure(_time, _measure));
 	}
 	

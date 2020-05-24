@@ -25,7 +25,6 @@ import java.util.logging.LogManager;
 import java.util.logging.Logger;
 import java.util.stream.Stream;
 import org.bytemechanics.metrics.crawler.MeasureReducer;
-import org.bytemechanics.metrics.crawler.internal.commons.functional.LambdaUnchecker;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -43,7 +42,7 @@ public class MeasureReducersTest {
 	@BeforeAll
 	public static void setup() throws IOException{
 		System.out.println(">>>>> MeasureReducersTest >>>> setup");
-		try(InputStream inputStream = LambdaUnchecker.class.getResourceAsStream("/logging.properties")){
+		try(InputStream inputStream = MeasureReducersTest.class.getResourceAsStream("/logging.properties")){
 			LogManager.getLogManager().readConfiguration(inputStream);
 		}catch (final IOException e){
 			Logger.getAnonymousLogger().severe("Could not load default logging.properties file");

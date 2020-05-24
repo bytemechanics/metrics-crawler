@@ -7,7 +7,7 @@
         <version>2.2.0</version>
     </parent>
     <artifactId>metrics-crawler</artifactId>
-    <version>1.0.3-SNAPSHOT</version>
+    <version>1.0.2-SNAPSHOT</version>
     <packaging>jar</packaging>
     <name>Metrics Crawler</name>
 	<description>Little library to crawl metrics</description>
@@ -52,7 +52,7 @@
 			<plugin>
 				<groupId>org.bytemechanics.maven</groupId>
 				<artifactId>copysource-maven-plugin</artifactId>
-				<version>1.1.0</version>
+				<version>1.3.1</version>
 				<executions>
 					<execution>
 						<id>copy-classes</id>
@@ -62,7 +62,7 @@
 						<configuration>
 							<copies>
 								<copy>
-									<artifact>${project.groupId}:copy-commons:1.5.1-SNAPSHOT</artifact>
+									<artifact>${project.groupId}:copy-commons:1.5.1</artifact>
 									<classes>
 										<class>org.bytemechanics.commons.collections.FastDropLastQueue</class>
 										<class>org.bytemechanics.commons.string.SimpleFormat</class>
@@ -81,12 +81,20 @@
 						<configuration>
 							<copies>
 								<copy>
-									<artifact>${project.groupId}:copy-commons:1.5.1-SNAPSHOT</artifact>
+									<artifact>${project.groupId}:copy-commons:1.5.1</artifact>
 									<classes>
 										<class>org.bytemechanics.commons.functional.LambdaUnchecker</class>
 									</classes>
 									<fromPackage>org.bytemechanics.commons</fromPackage>
 									<toPackage>org.bytemechanics.metrics.crawler.internal.commons</toPackage>
+								</copy>
+								<copy>
+									<artifact>${project.groupId}:copy-commons:1.5.1:test-sources</artifact>
+									<classes>
+										<class>org.bytemechanics.commons.tests.junit5.ArgumentsUtils</class>
+									</classes>
+									<fromPackage>org.bytemechanics.commons.tests.junit5</fromPackage>
+									<toPackage>org.bytemechanics.metrics.test.internal</toPackage>
 								</copy>
 							</copies>
 						</configuration>

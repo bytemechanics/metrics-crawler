@@ -22,7 +22,6 @@ import java.math.BigDecimal;
 import java.util.logging.LogManager;
 import java.util.logging.Logger;
 import java.util.stream.Stream;
-import org.bytemechanics.metrics.crawler.internal.commons.functional.LambdaUnchecker;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -40,7 +39,7 @@ public class IncorrectMeasureTypeTest {
 	@BeforeAll
 	public static void setup() throws IOException{
 		System.out.println(">>>>> IncorrectMeasureTypeTest >>>> setup");
-		try(InputStream inputStream = LambdaUnchecker.class.getResourceAsStream("/logging.properties")){
+		try(InputStream inputStream = IncorrectMeasureTypeTest.class.getResourceAsStream("/logging.properties")){
 			LogManager.getLogManager().readConfiguration(inputStream);
 		}catch (final IOException e){
 			Logger.getAnonymousLogger().severe("Could not load default logging.properties file");

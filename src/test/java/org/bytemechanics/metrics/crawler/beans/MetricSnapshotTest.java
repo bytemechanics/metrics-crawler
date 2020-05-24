@@ -27,7 +27,6 @@ import java.util.logging.Logger;
 import java.util.stream.Stream;
 import org.bytemechanics.metrics.crawler.MeasureReducer;
 import org.bytemechanics.metrics.crawler.internal.MeasureReducers;
-import org.bytemechanics.metrics.crawler.internal.commons.functional.LambdaUnchecker;
 import org.bytemechanics.metrics.crawler.internal.commons.string.SimpleFormat;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
@@ -48,7 +47,7 @@ public class MetricSnapshotTest {
 	@BeforeAll
 	public static void setup() throws IOException{
 		System.out.println(">>>>> MetricSnapshotTest >>>> setup");
-		try(InputStream inputStream = LambdaUnchecker.class.getResourceAsStream("/logging.properties")){
+		try(InputStream inputStream = MetricSnapshotTest.class.getResourceAsStream("/logging.properties")){
 			LogManager.getLogManager().readConfiguration(inputStream);
 		}catch (final IOException e){
 			Logger.getAnonymousLogger().severe("Could not load default logging.properties file");
@@ -98,6 +97,7 @@ public class MetricSnapshotTest {
 
 	@ParameterizedTest(name ="When MetricSnapshot is created from another MetricSnapshot with measureReducer:{0},name:{1},accumulatedSamples:{2},samplingSize:{3},totalHits:{4},maxMeasure:{5},minMeasure:{6},averageMeasure:{7},lastMeasure:{8},lastOccurrence:{9} should clone the instance")
 	@MethodSource("metricSnapshotBuilderDatapack")
+	@SuppressWarnings("unchecked")
 	public <T> void buildFromAnother(final MeasureReducer<T> _measureReducer,final String _name,final T _accumulatedSamples,final long _samplingSize,final long _totalHits,final T _maxMeasure,final T _minMeasure,final T _averageMeasure,final T _lastMeasure,final LocalDateTime _lastOccurrence){
 		
 		LocalDateTime now=LocalDateTime.now();
@@ -131,6 +131,7 @@ public class MetricSnapshotTest {
 
 	@ParameterizedTest(name ="When reduce two metrics with measureReducer:{0},name:{1},accumulatedSamples:{2},samplingSize:{3},totalHits:{4},maxMeasure:{5},minMeasure:{6},averageMeasure:{7},lastMeasure:{8},lastOccurrence:{9} should accumulate results")
 	@MethodSource("metricSnapshotBuilderDatapack")
+	@SuppressWarnings("unchecked")
 	public <T> void reduce(final MeasureReducer<T> _measureReducer,final String _name,final T _accumulatedSamples,final long _samplingSize,final long _totalHits,final T _maxMeasure,final T _minMeasure,final T _averageMeasure,final T _lastMeasure,final LocalDateTime _lastOccurrence) throws InterruptedException{
 		
 		LocalDateTime now=LocalDateTime.now();
@@ -182,6 +183,7 @@ public class MetricSnapshotTest {
 
 	@ParameterizedTest(name ="When MetricSnapshot is created with measureReducer:{0},name:{1},accumulatedSamples:{2},samplingSize:{3},totalHits:{4},maxMeasure:{5},minMeasure:{6},averageMeasure:{7},lastMeasure:{8},lastOccurrence:{9} then getName() should return {1}")
 	@MethodSource("metricSnapshotBuilderDatapack")
+	@SuppressWarnings("unchecked")
 	public <T> void getName(final MeasureReducer<T> _measureReducer,final String _name,final T _accumulatedSamples,final long _samplingSize,final long _totalHits,final T _maxMeasure,final T _minMeasure,final T _averageMeasure,final T _lastMeasure,final LocalDateTime _lastOccurrence){
 		
 		Assertions.assertEquals(_name
@@ -202,6 +204,7 @@ public class MetricSnapshotTest {
 
 	@ParameterizedTest(name ="When MetricSnapshot is created with measureReducer:{0},name:{1},accumulatedSamples:{2},samplingSize:{3},totalHits:{4},maxMeasure:{5},minMeasure:{6},averageMeasure:{7},lastMeasure:{8},lastOccurrence:{9} then getAccumulatedSamples() should return {2}")
 	@MethodSource("metricSnapshotBuilderDatapack")
+	@SuppressWarnings("unchecked")
 	public <T> void getAccumulatedSamples(final MeasureReducer<T> _measureReducer,final String _name,final T _accumulatedSamples,final long _samplingSize,final long _totalHits,final T _maxMeasure,final T _minMeasure,final T _averageMeasure,final T _lastMeasure,final LocalDateTime _lastOccurrence){
 		
 		Assertions.assertEquals(_accumulatedSamples
@@ -221,6 +224,7 @@ public class MetricSnapshotTest {
 	}
 	@ParameterizedTest(name ="When MetricSnapshot is created with measureReducer:{0},name:{1},accumulatedSamples:{2},samplingSize:{3},totalHits:{4},maxMeasure:{5},minMeasure:{6},averageMeasure:{7},lastMeasure:{8},lastOccurrence:{9} then getFormatedAccumulatedSamples() should return {2}")
 	@MethodSource("metricSnapshotBuilderDatapack")
+	@SuppressWarnings("unchecked")
 	public <T> void getFormatedAccumulatedSamples(final MeasureReducer<T> _measureReducer,final String _name,final T _accumulatedSamples,final long _samplingSize,final long _totalHits,final T _maxMeasure,final T _minMeasure,final T _averageMeasure,final T _lastMeasure,final LocalDateTime _lastOccurrence){
 		
 		Assertions.assertEquals(_measureReducer.toString(_accumulatedSamples)
@@ -240,6 +244,7 @@ public class MetricSnapshotTest {
 
 	@ParameterizedTest(name ="When MetricSnapshot is created with measureReducer:{0},name:{1},accumulatedSamples:{2},samplingSize:{3},totalHits:{4},maxMeasure:{5},minMeasure:{6},averageMeasure:{7},lastMeasure:{8},lastOccurrence:{9} then getSamplingSize() should return {3}")
 	@MethodSource("metricSnapshotBuilderDatapack")
+	@SuppressWarnings("unchecked")
 	public <T> void getSamplingSize(final MeasureReducer<T> _measureReducer,final String _name,final T _accumulatedSamples,final long _samplingSize,final long _totalHits,final T _maxMeasure,final T _minMeasure,final T _averageMeasure,final T _lastMeasure,final LocalDateTime _lastOccurrence){
 		
 		Assertions.assertEquals(_samplingSize
@@ -260,6 +265,7 @@ public class MetricSnapshotTest {
 	
 	@ParameterizedTest(name ="When MetricSnapshot is created with measureReducer:{0},name:{1},accumulatedSamples:{2},samplingSize:{3},totalHits:{4},maxMeasure:{5},minMeasure:{6},averageMeasure:{7},lastMeasure:{8},lastOccurrence:{9} then getTotalHits() should return {2}")
 	@MethodSource("metricSnapshotBuilderDatapack")
+	@SuppressWarnings("unchecked")
 	public <T> void getTotalHits(final MeasureReducer<T> _measureReducer,final String _name,final T _accumulatedSamples,final long _samplingSize,final long _totalHits,final T _maxMeasure,final T _minMeasure,final T _averageMeasure,final T _lastMeasure,final LocalDateTime _lastOccurrence){
 		
 		Assertions.assertEquals(_totalHits
@@ -279,6 +285,7 @@ public class MetricSnapshotTest {
 
 	@ParameterizedTest(name ="When MetricSnapshot is created with measureReducer:{0},name:{1},accumulatedSamples:{2},samplingSize:{3},totalHits:{4},maxMeasure:{5},minMeasure:{6},averageMeasure:{7},lastMeasure:{8},lastOccurrence:{9} then getMaxMeasure() should return {5}")
 	@MethodSource("metricSnapshotBuilderDatapack")
+	@SuppressWarnings("unchecked")
 	public <T> void getMaxMeasure(final MeasureReducer<T> _measureReducer,final String _name,final T _accumulatedSamples,final long _samplingSize,final long _totalHits,final T _maxMeasure,final T _minMeasure,final T _averageMeasure,final T _lastMeasure,final LocalDateTime _lastOccurrence){
 		
 		Assertions.assertEquals(_maxMeasure
@@ -298,6 +305,7 @@ public class MetricSnapshotTest {
 	}
 	@ParameterizedTest(name ="When MetricSnapshot is created with measureReducer:{0},name:{1},accumulatedSamples:{2},samplingSize:{3},totalHits:{4},maxMeasure:{5},minMeasure:{6},averageMeasure:{7},lastMeasure:{8},lastOccurrence:{9} then getFormatedMaxMeasure() should return {5}")
 	@MethodSource("metricSnapshotBuilderDatapack")
+	@SuppressWarnings("unchecked")
 	public <T> void getFormatedMaxMeasure(final MeasureReducer<T> _measureReducer,final String _name,final T _accumulatedSamples,final long _samplingSize,final long _totalHits,final T _maxMeasure,final T _minMeasure,final T _averageMeasure,final T _lastMeasure,final LocalDateTime _lastOccurrence){
 		
 		Assertions.assertEquals(_measureReducer.toString(_maxMeasure)
@@ -317,6 +325,7 @@ public class MetricSnapshotTest {
 
 	@ParameterizedTest(name ="When MetricSnapshot is created with measureReducer:{0},name:{1},accumulatedSamples:{2},samplingSize:{3},totalHits:{4},maxMeasure:{5},minMeasure:{6},averageMeasure:{7},lastMeasure:{8},lastOccurrence:{9} then getMinMeasure() should return {6}")
 	@MethodSource("metricSnapshotBuilderDatapack")
+	@SuppressWarnings("unchecked")
 	public <T> void getMinMeasure(final MeasureReducer<T> _measureReducer,final String _name,final T _accumulatedSamples,final long _samplingSize,final long _totalHits,final T _maxMeasure,final T _minMeasure,final T _averageMeasure,final T _lastMeasure,final LocalDateTime _lastOccurrence){
 		
 		Assertions.assertEquals(_minMeasure
@@ -336,6 +345,7 @@ public class MetricSnapshotTest {
 	}
 	@ParameterizedTest(name ="When MetricSnapshot is created with measureReducer:{0},name:{1},accumulatedSamples:{2},samplingSize:{3},totalHits:{4},maxMeasure:{5},minMeasure:{6},averageMeasure:{7},lastMeasure:{8},lastOccurrence:{9} then getFormatedMinMeasure() should return {6}")
 	@MethodSource("metricSnapshotBuilderDatapack")
+	@SuppressWarnings("unchecked")
 	public <T> void getFormatedMinMeasure(final MeasureReducer<T> _measureReducer,final String _name,final T _accumulatedSamples,final long _samplingSize,final long _totalHits,final T _maxMeasure,final T _minMeasure,final T _averageMeasure,final T _lastMeasure,final LocalDateTime _lastOccurrence){
 		
 		Assertions.assertEquals(_measureReducer.toString(_minMeasure)
@@ -355,6 +365,7 @@ public class MetricSnapshotTest {
 	
 	@ParameterizedTest(name ="When MetricSnapshot is created with measureReducer:{0},name:{1},accumulatedSamples:{2},samplingSize:{3},totalHits:{4},maxMeasure:{5},minMeasure:{6},averageMeasure:{7},lastMeasure:{8},lastOccurrence:{9} then getAverageMeasure() should return {7}")
 	@MethodSource("metricSnapshotBuilderDatapack")
+	@SuppressWarnings("unchecked")
 	public <T> void getAverageMeasure(final MeasureReducer<T> _measureReducer,final String _name,final T _accumulatedSamples,final long _samplingSize,final long _totalHits,final T _maxMeasure,final T _minMeasure,final T _averageMeasure,final T _lastMeasure,final LocalDateTime _lastOccurrence){
 		
 		Assertions.assertEquals(_averageMeasure
@@ -374,6 +385,7 @@ public class MetricSnapshotTest {
 	}
 	@ParameterizedTest(name ="When MetricSnapshot is created with measureReducer:{0},name:{1},accumulatedSamples:{2},samplingSize:{3},totalHits:{4},maxMeasure:{5},minMeasure:{6},averageMeasure:{7},lastMeasure:{8},lastOccurrence:{9} then getFormatedAverageMeasure() should return {7}")
 	@MethodSource("metricSnapshotBuilderDatapack")
+	@SuppressWarnings("unchecked")
 	public <T> void getFormatedAverageMeasure(final MeasureReducer<T> _measureReducer,final String _name,final T _accumulatedSamples,final long _samplingSize,final long _totalHits,final T _maxMeasure,final T _minMeasure,final T _averageMeasure,final T _lastMeasure,final LocalDateTime _lastOccurrence){
 		
 		Assertions.assertEquals(_measureReducer.toString(_averageMeasure)
@@ -393,6 +405,7 @@ public class MetricSnapshotTest {
 	
 	@ParameterizedTest(name ="When MetricSnapshot is created with measureReducer:{0},name:{1},accumulatedSamples:{2},samplingSize:{3},totalHits:{4},maxMeasure:{5},minMeasure:{6},averageMeasure:{7},lastMeasure:{8},lastOccurrence:{9} then getLastMeasure() should return {8}")
 	@MethodSource("metricSnapshotBuilderDatapack")
+	@SuppressWarnings("unchecked")
 	public <T> void getLastMeasure(final MeasureReducer<T> _measureReducer,final String _name,final T _accumulatedSamples,final long _samplingSize,final long _totalHits,final T _maxMeasure,final T _minMeasure,final T _averageMeasure,final T _lastMeasure,final LocalDateTime _lastOccurrence){
 		
 		Assertions.assertEquals(_lastMeasure
@@ -412,6 +425,7 @@ public class MetricSnapshotTest {
 	}
 	@ParameterizedTest(name ="When MetricSnapshot is created with measureReducer:{0},name:{1},accumulatedSamples:{2},samplingSize:{3},totalHits:{4},maxMeasure:{5},minMeasure:{6},averageMeasure:{7},lastMeasure:{8},lastOccurrence:{9} then getFormatedLastMeasure() should return {8}")
 	@MethodSource("metricSnapshotBuilderDatapack")
+	@SuppressWarnings("unchecked")
 	public <T> void getFormatedLastMeasure(final MeasureReducer<T> _measureReducer,final String _name,final T _accumulatedSamples,final long _samplingSize,final long _totalHits,final T _maxMeasure,final T _minMeasure,final T _averageMeasure,final T _lastMeasure,final LocalDateTime _lastOccurrence){
 		
 		Assertions.assertEquals(_measureReducer.toString(_lastMeasure)
@@ -431,6 +445,7 @@ public class MetricSnapshotTest {
 
 	@ParameterizedTest(name ="When MetricSnapshot is created with measureReducer:{0},name:{1},accumulatedSamples:{2},samplingSize:{3},totalHits:{4},maxMeasure:{5},minMeasure:{6},averageMeasure:{7},lastMeasure:{8},lastOccurrence:{9} then getLastOccurrence() should return {9}")
 	@MethodSource("metricSnapshotBuilderDatapack")
+	@SuppressWarnings("unchecked")
 	public <T> void getLastOccurrence(final MeasureReducer<T> _measureReducer,final String _name,final T _accumulatedSamples,final long _samplingSize,final long _totalHits,final T _maxMeasure,final T _minMeasure,final T _averageMeasure,final T _lastMeasure,final LocalDateTime _lastOccurrence){
 		
 		Assertions.assertEquals(_lastOccurrence
@@ -461,6 +476,7 @@ public class MetricSnapshotTest {
 
 	@ParameterizedTest(name ="When MetricSnapshot is created with measureReducer:{0},name:{1},accumulatedSamples:{2},samplingSize:{3},totalHits:{4},maxMeasure:{5},minMeasure:{6},averageMeasure:{7},lastMeasure:{8},lastOccurrence:{9} then toString() should return {10}")
 	@MethodSource("metricSnapshotBuilderToStringDatapack")
+	@SuppressWarnings("unchecked")
 	public <T> void toString(final MeasureReducer<T> _measureReducer,final String _name,final T _accumulatedSamples,final long _samplingSize,final long _totalHits,final T _maxMeasure,final T _minMeasure,final T _averageMeasure,final T _lastMeasure,final LocalDateTime _lastOccurrence,final String _expected){
 		
 		Assertions.assertEquals(_expected
@@ -481,6 +497,7 @@ public class MetricSnapshotTest {
 
 	@ParameterizedTest(name ="Two distinct instances from measureReducer:{0},name:{1},accumulatedSamples:{2},samplingSize:{3},totalHits:{4},maxMeasure:{5},minMeasure:{6},averageMeasure:{7},lastMeasure:{8},lastOccurrence:{9} should retrieve the same hashcode")
 	@MethodSource("metricSnapshotBuilderDatapack")
+	@SuppressWarnings("unchecked")
 	public <T> void hashcode(final MeasureReducer<T> _measureReducer,final String _name,final T _accumulatedSamples,final long _samplingSize,final long _totalHits,final T _maxMeasure,final T _minMeasure,final T _averageMeasure,final T _lastMeasure,final LocalDateTime _lastOccurrence){
 		
 		MetricSnapshot base=MetricSnapshot.builder(_measureReducer)
@@ -629,7 +646,7 @@ public class MetricSnapshotTest {
 
 	@ParameterizedTest(name ="Two distinct instances from measureReducer:{0},name:{1},accumulatedSamples:{2},samplingSize:{3},totalHits:{4},maxMeasure:{5},minMeasure:{6},averageMeasure:{7},lastMeasure:{8},lastOccurrence:{9} should be equals()")
 	@MethodSource("metricSnapshotBuilderDatapack")
-	@SuppressWarnings("IncompatibleEquals")
+	@SuppressWarnings({"unchecked"})
 	public <T> void equals(final MeasureReducer<T> _measureReducer,final String _name,final T _accumulatedSamples,final long _samplingSize,final long _totalHits,final T _maxMeasure,final T _minMeasure,final T _averageMeasure,final T _lastMeasure,final LocalDateTime _lastOccurrence){
 		
 		MetricSnapshot base=MetricSnapshot.builder(_measureReducer)

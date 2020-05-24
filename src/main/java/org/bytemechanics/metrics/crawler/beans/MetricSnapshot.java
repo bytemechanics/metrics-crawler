@@ -169,6 +169,7 @@ public class MetricSnapshot<TYPE>{
 	 * @return reduced metric snapshot
 	 * @see MeasureReducer
 	 */
+	@SuppressWarnings("unchecked")
 	public MetricSnapshot<TYPE> reduce(final MetricSnapshot<TYPE> _metric) {
 
 		return MetricSnapshot.builder(this.measureReducer)
@@ -412,7 +413,7 @@ public class MetricSnapshot<TYPE>{
 	 */
 	@java.lang.SuppressWarnings("all")
 	public static <T> MetricSnapshotBuilder builder(final MeasureReducer<T> _measureReducer) {
-		return new MetricSnapshotBuilder(_measureReducer);
+		return new MetricSnapshotBuilder<>(_measureReducer);
 	}	
 	/**
 	 * Retrieves a new MetricSnapshotBuilder that clones the given _metricSnapshot
@@ -422,7 +423,7 @@ public class MetricSnapshot<TYPE>{
 	 * @return new MetricSnapshotBuilder
 	 */
 	public static <T> MetricSnapshotBuilder builder(final MeasureReducer<T> _measureReducer,final MetricSnapshot<T> _metricSnapshot) {
-		return new MetricSnapshotBuilder(_measureReducer,_metricSnapshot);
+		return new MetricSnapshotBuilder<>(_measureReducer,_metricSnapshot);
 	}	
 
 	/**

@@ -75,8 +75,9 @@ public class Measure<TYPE> {
 	 * @return MetricSnapshot of the same TYPE
 	 * @see MetricSnapshot
 	 */
+	@SuppressWarnings("unchecked")
 	public MetricSnapshot<TYPE> toMetricSnapshot(){
-		return MetricSnapshot.builder(this.reducer)
+		return MetricSnapshot.<TYPE>builder(this.reducer)
 								.samplingSize(1)
 								.accumulatedSamples(this.value)
 								.maxMeasure(this.value)

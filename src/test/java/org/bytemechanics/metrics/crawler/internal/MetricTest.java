@@ -30,9 +30,8 @@ import org.bytemechanics.metrics.crawler.beans.MetricSnapshot;
 import org.bytemechanics.metrics.crawler.exceptions.IncorrectMeasureType;
 import org.bytemechanics.metrics.crawler.exceptions.IncorrectSamplingSize;
 import org.bytemechanics.metrics.crawler.internal.commons.collections.FastDropLastQueue;
-import org.bytemechanics.metrics.crawler.internal.commons.functional.LambdaUnchecker;
 import org.bytemechanics.metrics.crawler.internal.commons.string.SimpleFormat;
-import org.bytemechanics.metrics.test.ArgumentsUtils;
+import org.bytemechanics.metrics.test.internal.ArgumentsUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -52,7 +51,7 @@ public class MetricTest {
 	@BeforeAll
 	public static void setup() throws IOException{
 		System.out.println(">>>>> MetricTest >>>> setup");
-		try(InputStream inputStream = LambdaUnchecker.class.getResourceAsStream("/logging.properties")){
+		try(InputStream inputStream = MetricTest.class.getResourceAsStream("/logging.properties")){
 			LogManager.getLogManager().readConfiguration(inputStream);
 		}catch (final IOException e){
 			Logger.getAnonymousLogger().severe("Could not load default logging.properties file");
@@ -75,6 +74,7 @@ public class MetricTest {
 	}
 	@ParameterizedTest(name ="When Metric is created with _name:{0},_samplingSize:{1},_reducer:{2} of type {3} the getName() returns {0}")
 	@MethodSource("metricBuilderDatapack")
+	@SuppressWarnings("unchecked")
 	public <T> void getName(final String _name,final int _samplingSize,final MeasureReducer _reducer,final Class<T> _type){
 
 		final Metric instance=new Metric(_name,_samplingSize,_reducer);
@@ -84,6 +84,7 @@ public class MetricTest {
 	}
 	@ParameterizedTest(name ="When Metric is created with _name:{0},_samplingSize:{1},_reducer:{2} of type {3} the getHits() returns 0")
 	@MethodSource("metricBuilderDatapack")
+	@SuppressWarnings("unchecked")
 	public <T> void getHits(final String _name,final int _samplingSize,final MeasureReducer _reducer,final Class<T> _type){
 
 		final Metric instance=new Metric(_name,_samplingSize,_reducer);
@@ -93,6 +94,7 @@ public class MetricTest {
 	}
 	@ParameterizedTest(name ="When Metric is created with _name:{0},_samplingSize:{1},_reducer:{2} of type {3} the getMeasures() returns empty queue")
 	@MethodSource("metricBuilderDatapack")
+	@SuppressWarnings("unchecked")
 	public <T> void getEmptyMeasures(final String _name,final int _samplingSize,final MeasureReducer _reducer,final Class<T> _type){
 
 		final Metric instance=new Metric(_name,_samplingSize,_reducer);
@@ -102,6 +104,7 @@ public class MetricTest {
 	}
 	@ParameterizedTest(name ="When Metric is created with _name:{0},_samplingSize:{1},_reducer:{2} of type {3} the getReducer() returns {2}")
 	@MethodSource("metricBuilderDatapack")
+	@SuppressWarnings("unchecked")
 	public <T> void getReducer(final String _name,final int _samplingSize,final MeasureReducer _reducer,final Class<T> _type){
 
 		final Metric instance=new Metric(_name,_samplingSize,_reducer);
@@ -120,6 +123,7 @@ public class MetricTest {
 	}
 	@ParameterizedTest(name ="When Metric is created with _name:{0},_samplingSize:{1},_reducer:{2} of type {3} the toString() returns {4}")
 	@MethodSource("metricStringBuilderDatapack")
+	@SuppressWarnings("unchecked")
 	public <T> void toString(final String _name,final int _samplingSize,final MeasureReducer _reducer,final Class<T> _type,final String _expected){
 
 		final Metric instance=new Metric(_name,_samplingSize,_reducer);
@@ -139,13 +143,14 @@ public class MetricTest {
 	}
 	@ParameterizedTest(name ="Try to create with Metric with _name:{0},_samplingSize:{1},_reducer:{2} should raise {3}")
 	@MethodSource("metricFailureBuilderDatapack")
-	@SuppressWarnings("ThrowableResultIgnored")
+	@SuppressWarnings({"ThrowableResultIgnored","unchecked"})
 	public <T> void contructorNullControl(final String _name,final int _samplingSize,final MeasureReducer _reducer,final Exception _expected){
 
 		Assertions.assertThrows(_expected.getClass()
 								,() -> new Metric(_name,_samplingSize,_reducer)
 								,_expected.toString());
 	}
+	@SuppressWarnings("unchecked")
 	static Stream<Arguments> metricComparisonBuilderDatapack() {
 	    return Stream.of(
 					Arguments.of(new Metric("c",1,MeasureReducers.DURATION.get(Duration.class)),new Metric("c",1,MeasureReducers.DURATION.get(Duration.class)),true),
@@ -177,6 +182,7 @@ public class MetricTest {
 		Assertions.assertEquals(true,_metric2.hashCode()==_metric2.hashCode());
 	}
 
+	@SuppressWarnings("unchecked")
 	static Stream<Arguments> metricAddMeasureBuilderDatapack() {
 	    return Stream.of(
 					Arguments.of(new Metric("c",1,MeasureReducers.DURATION.get(Duration.class)),LocalDateTime.now(),Duration.ofSeconds(10)),
@@ -186,6 +192,7 @@ public class MetricTest {
 	}
 	@ParameterizedTest(name ="When Metric {0} is called with addMeasure(_time:{1},_measure:{2}) to string must reflect the new value")
 	@MethodSource("metricAddMeasureBuilderDatapack")
+	@SuppressWarnings("unchecked")
 	public <T> void addMeasure(final Metric _metric,final LocalDateTime _time,final T _measure){
 
 		_metric.addMeasure(_time,_measure);
@@ -198,6 +205,7 @@ public class MetricTest {
 								,_metric.toString());
 	}
 
+	@SuppressWarnings("unchecked")
 	static Stream<Arguments> metricIncorrectMeasureBuilderDatapack() {
 	    return Stream.of(
 					Arguments.of(new Metric("c",1,MeasureReducers.DURATION.get(Duration.class)),null,null,NullPointerException.class),
@@ -213,12 +221,13 @@ public class MetricTest {
 	}
 	@ParameterizedTest(name ="When call addMeasure({1},{2}) to metric {0} a {3} exception must be thrown")
 	@MethodSource("metricIncorrectMeasureBuilderDatapack")
-	@SuppressWarnings("ThrowableResultIgnored")
+	@SuppressWarnings({"ThrowableResultIgnored", "unchecked"})
 	public <T> void addWrongMeasure(final Metric _metric,final LocalDateTime _time, final T _measure,final Class<? extends Exception> _exception){
 
 		Assertions.assertThrows(_exception, () -> _metric.addMeasure(_time, _measure));
 	}
 
+	@SuppressWarnings("unchecked")
 	static Stream<Arguments> metricGetMeasureBuilderDatapack() {
 		final Metric persistentMetric=new Metric("c",2,MeasureReducers.DOUBLE.get(Double.class));
 	    return Stream.of(
@@ -232,6 +241,7 @@ public class MetricTest {
 
 	@ParameterizedTest(name ="When Metric metric with 2 sampling size is called with addMeasure(_time:{0},_measure:{1}) {2} times getMeasures() should return {3}")
 	@MethodSource("metricGetMeasureBuilderDatapack")
+	@SuppressWarnings("unchecked")
 	public <T> void getMeasures(final Metric _persistentMetric,final LocalDateTime _time, final T _measure,final int _times,final List<Measure> _expected){
 
 		_persistentMetric.addMeasure(_time,_measure);
@@ -241,6 +251,7 @@ public class MetricTest {
 
 	@Test
 	@DisplayName("Double metric should convert correctly to snapshot")
+	@SuppressWarnings("unchecked")
 	public <T> void doubleToSnapshot(){
 
 		Metric metric=new Metric("mNAme",3,MeasureReducers.DOUBLE.get(Double.class));
@@ -266,6 +277,7 @@ public class MetricTest {
 
 	@Test
 	@DisplayName("Long metric should convert correctly to snapshot")
+	@SuppressWarnings("unchecked")
 	public <T> void longToSnapshot(){
 
 		Metric metric=new Metric("mNAme",3,MeasureReducers.LONG.get(Long.class));
@@ -291,6 +303,7 @@ public class MetricTest {
 
 	@Test
 	@DisplayName("Duration metric should convert correctly to snapshot")
+	@SuppressWarnings("unchecked")
 	public <T> void durationToSnapshot(){
 
 		Metric metric=new Metric("mNAme",3,MeasureReducers.DURATION.get(Duration.class));

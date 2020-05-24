@@ -31,7 +31,6 @@ import org.bytemechanics.metrics.crawler.MetricsService;
 import org.bytemechanics.metrics.crawler.beans.MetricSnapshot;
 import org.bytemechanics.metrics.crawler.exceptions.IncorrectMeasureType;
 import org.bytemechanics.metrics.crawler.internal.MeasureReducers;
-import org.bytemechanics.metrics.crawler.internal.commons.functional.LambdaUnchecker;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -52,7 +51,7 @@ public class DefaultMetricsServiceImplTest {
 	@BeforeAll
 	public static void setup() throws IOException{
 		System.out.println(">>>>> DefaultMetricsServiceImplTest >>>> setup");
-		try(InputStream inputStream = LambdaUnchecker.class.getResourceAsStream("/logging.properties")){
+		try(InputStream inputStream = DefaultMetricsServiceImplTest.class.getResourceAsStream("/logging.properties")){
 			LogManager.getLogManager().readConfiguration(inputStream);
 		}catch (final IOException e){
 			Logger.getAnonymousLogger().severe("Could not load default logging.properties file");

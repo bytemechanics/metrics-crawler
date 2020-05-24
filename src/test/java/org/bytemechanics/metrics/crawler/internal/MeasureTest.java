@@ -27,9 +27,8 @@ import java.util.logging.Logger;
 import java.util.stream.Stream;
 import org.bytemechanics.metrics.crawler.MeasureReducer;
 import org.bytemechanics.metrics.crawler.beans.MetricSnapshot;
-import org.bytemechanics.metrics.crawler.internal.commons.functional.LambdaUnchecker;
 import org.bytemechanics.metrics.crawler.internal.commons.string.SimpleFormat;
-import org.bytemechanics.metrics.test.ArgumentsUtils;
+import org.bytemechanics.metrics.test.internal.ArgumentsUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -49,7 +48,7 @@ public class MeasureTest {
 	@BeforeAll
 	public static void setup() throws IOException{
 		System.out.println(">>>>> MeasureTest >>>> setup");
-		try(InputStream inputStream = LambdaUnchecker.class.getResourceAsStream("/logging.properties")){
+		try(InputStream inputStream = MeasureTest.class.getResourceAsStream("/logging.properties")){
 			LogManager.getLogManager().readConfiguration(inputStream);
 		}catch (final IOException e){
 			Logger.getAnonymousLogger().severe("Could not load default logging.properties file");
@@ -65,7 +64,7 @@ public class MeasureTest {
 	
 	@Test
 	@DisplayName("When try to create null _timestamp measure should raise NullPointerException")
-	@SuppressWarnings("ThrowableResultIgnored")
+	@SuppressWarnings({"ThrowableResultIgnored", "unchecked"})
 	public void constructor_null_timestamp(){
 
 		Assertions.assertThrows(NullPointerException.class
@@ -74,7 +73,7 @@ public class MeasureTest {
 	}
 	@Test
 	@DisplayName("When try to create null _value measure should raise NullPointerException")
-	@SuppressWarnings("ThrowableResultIgnored")
+	@SuppressWarnings({"ThrowableResultIgnored", "unchecked"})
 	public void constructor_null_value(){
 
 		Assertions.assertThrows(NullPointerException.class
@@ -83,7 +82,7 @@ public class MeasureTest {
 	}
 	@Test
 	@DisplayName("When try to create null _reducer measure should raise NullPointerException")
-	@SuppressWarnings("ThrowableResultIgnored")
+	@SuppressWarnings({"ThrowableResultIgnored", "unchecked"})
 	public void constructor_null_reducer(){
 
 		Assertions.assertThrows(NullPointerException.class
@@ -102,6 +101,7 @@ public class MeasureTest {
 
 	@ParameterizedTest(name ="When Measure is created with _time:{0},_measure:{1},_reducer:{2} of type {3} the getTimestamp() returns {0}")
 	@MethodSource("measureBuilderDatapack")
+	@SuppressWarnings("unchecked")
 	public <T> void getTimestamp(final LocalDateTime _time,final T _measure,final MeasureReducer _reducer,final Class<T> _type){
 
 		final Measure instance=new Measure(_time,_measure,_reducer);
@@ -111,6 +111,7 @@ public class MeasureTest {
 	}
 	@ParameterizedTest(name ="When Measure is created with _time:{0},_measure:{1},_reducer:{2} of type {3} the getValue() returns {1}")
 	@MethodSource("measureBuilderDatapack")
+	@SuppressWarnings("unchecked")
 	public <T> void getValue(final LocalDateTime _time,final T _measure,final MeasureReducer _reducer,final Class<T> _type){
 
 		final Measure instance=new Measure(_time,_measure,_reducer);
@@ -120,6 +121,7 @@ public class MeasureTest {
 	}
 	@ParameterizedTest(name ="Two measures of _time:{0},_measure:{1},_reducer:{2} of type {3} must return the same hashcode()")
 	@MethodSource("measureBuilderDatapack")
+	@SuppressWarnings("unchecked")
 	public <T> void hashcode(final LocalDateTime _time,final T _measure,final MeasureReducer _reducer,final Class<T> _type){
 
 		final Measure instance1=new Measure(_time,_measure,_reducer);
@@ -129,6 +131,7 @@ public class MeasureTest {
 	}
 	@ParameterizedTest(name ="Two measures of_time:{0},_measure:{1},_reducer:{2} of type {3} must be equals()")
 	@MethodSource("measureBuilderDatapack")
+	@SuppressWarnings("unchecked")
 	public <T> void equals(final LocalDateTime _time,final T _measure,final MeasureReducer _reducer,final Class<T> _type){
 
 		final Measure instance1=new Measure(_time,_measure,_reducer);
@@ -143,7 +146,7 @@ public class MeasureTest {
 	static Stream<Arguments> measureStringBuilderDatapack() {
 		return ArgumentsUtils.compose(measureBuilderDatapack(),arguments -> SimpleFormat.format("Measure[timestamp={}, measureType={}, measure={},reducer={}]",
 																				Optional.ofNullable((LocalDateTime)arguments[0])
-																						.map(val -> (LocalDateTime)val)
+																						.map(val -> val)
 																						.map(val -> val.format(DateTimeFormatter.ISO_DATE_TIME))
 																						.orElse("null"),
 																				Optional.ofNullable(arguments[1])
@@ -154,6 +157,7 @@ public class MeasureTest {
 	}
 	@ParameterizedTest(name ="When Measure is created with _time:{0},_measure:{1},_reducer:{2} of type {3} the toString() should return {4}")
 	@MethodSource("measureStringBuilderDatapack")
+	@SuppressWarnings("unchecked")
 	public <T> void toString(final LocalDateTime _time,final T _measure,final MeasureReducer _reducer,final Class<T> _type,final String _expected){
 
 		final Measure instance=new Measure(_time,_measure,_reducer);
@@ -162,6 +166,7 @@ public class MeasureTest {
 		Assertions.assertEquals(_expected,instance.toString());
 	}
 
+	@SuppressWarnings("unchecked")
 	static Stream<Arguments> measureSnapshotBuilderDatapack() {
 		return ArgumentsUtils.compose(measureBuilderDatapack(),arguments -> MetricSnapshot.builder((MeasureReducer)arguments[2])
 																								.samplingSize(1)
@@ -171,6 +176,7 @@ public class MeasureTest {
 	}
 	@ParameterizedTest(name ="When Measure is created with _time:{0},_measure:{1},_reducer:{2} of type {3} the toMetricSnapshot() should return {4}")
 	@MethodSource("measureSnapshotBuilderDatapack")
+	@SuppressWarnings("unchecked")
 	public <T> void toMetricSnapshot(final LocalDateTime _time,final T _measure,final MeasureReducer _reducer,final Class<T> _type,final MetricSnapshot _expected){
 
 		final Measure instance=new Measure(_time,_measure,_reducer);
