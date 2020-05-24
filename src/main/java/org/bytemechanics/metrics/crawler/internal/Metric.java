@@ -98,6 +98,7 @@ public class Metric<TYPE> {
 	 * @throws NullPointerException if any of _time or_measure are null
 	 * @throws IncorrectMeasureType if the _measure type is not assignable to the type of the reducer of this metric
 	 */
+	@SuppressWarnings("unchecked")
 	public void addMeasure(final LocalDateTime _timestamp,final TYPE _measure){
 		if(_timestamp==null)
 			throw new NullPointerException(SimpleFormat.format("Can not register null _timestamp measure at metric {}",this.name));
@@ -106,7 +107,7 @@ public class Metric<TYPE> {
 		if(!this.reducer.getType().isAssignableFrom(_measure.getClass()))
 			throw new IncorrectMeasureType(this.name, this.reducer.getType(), _measure.getClass());
 		this.hits++;
-		this.measures.offer(new Measure(_timestamp, _measure,this.reducer));
+		this.measures.offer(new Measure<>(_timestamp, _measure,this.reducer));
 	}
 	
 	/**
@@ -129,8 +130,9 @@ public class Metric<TYPE> {
 	 * @return MetricSnapshot of the same TYPE cloned from the given snapshot with the current hits as total hits
 	 * @see MetricSnapshot
 	 */
+	@SuppressWarnings("unchecked")
 	protected MetricSnapshot<TYPE> completeSnapshot(final MetricSnapshot _metricSnapshot){
-		return MetricSnapshot.builder(this.reducer,_metricSnapshot)
+		return MetricSnapshot.<TYPE>builder(this.reducer,_metricSnapshot)
 									.name(this.name)
 									.totalHits(this.hits)
 								.build();
@@ -140,8 +142,9 @@ public class Metric<TYPE> {
 	 * @return MetricSnapshot of the same TYPE
 	 * @see MetricSnapshot
 	 */
+	@SuppressWarnings("unchecked")
 	protected MetricSnapshot<TYPE> defaultSnapshot(){
-		return MetricSnapshot.builder(this.reducer)
+		return MetricSnapshot.<TYPE>builder(this.reducer)
 									.name(this.name)
 								.build();
 	}

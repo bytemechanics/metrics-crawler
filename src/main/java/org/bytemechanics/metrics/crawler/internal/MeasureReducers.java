@@ -200,6 +200,7 @@ public enum MeasureReducers {
 	 * @param _class Class to cast the returned value
 	 * @return measure reducer identity of this enum cast to _class
 	 */
+	@SuppressWarnings("unchecked")
 	public <T> T identity(final Class<T> _class){
 		return (T)this.reducer.identity();
 	}
@@ -209,8 +210,9 @@ public enum MeasureReducers {
 	 * @param _class Class to cast the returned value
 	 * @return measure reducer of this enum cast to _class
 	 */
+	@SuppressWarnings("unchecked")
 	public <T> MeasureReducer<T> get(final Class<T> _class){
-		return (MeasureReducer<T>)this.reducer;
+		return this.reducer;
 	}
 	/**
 	 * Returns supplier to get the reducer of this enum
@@ -218,6 +220,7 @@ public enum MeasureReducers {
 	 * @param _class Class to cast the returned value
 	 * @return supplier to get the reducer of this enum cast to _class
 	 */
+	@SuppressWarnings("unchecked")
 	public <T> Supplier<MeasureReducer<T>> supplier(final Class<T> _class){
 		return () -> (MeasureReducer<T>)this.reducer;
 	}

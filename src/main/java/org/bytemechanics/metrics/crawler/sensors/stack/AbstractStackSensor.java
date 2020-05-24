@@ -29,7 +29,7 @@ import org.bytemechanics.metrics.crawler.sensors.AbstractSensor;
  */
 public abstract class AbstractStackSensor<TYPE> extends AbstractSensor<TYPE> {
 
-	private static final ThreadLocal<String> CURRENT_NAME=new ThreadLocal<>();
+	protected static final InheritableThreadLocal<String> CURRENT_NAME=new InheritableThreadLocal<>();
 
 	private final String segment;
 	
@@ -60,8 +60,9 @@ public abstract class AbstractStackSensor<TYPE> extends AbstractSensor<TYPE> {
 	public void close() {
 		super.close();
 		AbstractStackSensor.CURRENT_NAME.set(Optional.ofNullable(AbstractStackSensor.CURRENT_NAME.get())
-											.filter(current -> current.length()>(segment.length()+1))
-											.map(current -> current.substring(0,current.length()-(segment.length()+1)))
-											.orElse(""));
+															.filter(current -> current.length()>(segment.length()+1))
+															.filter(current -> current.indexOf(segment)>-1)
+															.map(current ->  current.substring(0,current.indexOf(segment)-1))
+															.orElse(""));
 	}
 }

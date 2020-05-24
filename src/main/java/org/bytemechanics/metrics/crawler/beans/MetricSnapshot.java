@@ -169,6 +169,7 @@ public class MetricSnapshot<TYPE>{
 	 * @return reduced metric snapshot
 	 * @see MeasureReducer
 	 */
+	@SuppressWarnings("unchecked")
 	public MetricSnapshot<TYPE> reduce(final MetricSnapshot<TYPE> _metric) {
 
 		return MetricSnapshot.builder(this.measureReducer)
@@ -184,8 +185,13 @@ public class MetricSnapshot<TYPE>{
 						.averageMeasure(this.measureReducer.accumulate(this.accumulatedSamples, _metric.accumulatedSamples)
 															.flatMap(total -> this.measureReducer.average(total,this.samplingSize+_metric.samplingSize))
 															.orElseGet(this.measureReducer::identity))
-						.lastMeasure((this.lastOccurrence.isBefore(_metric.lastOccurrence))? _metric.lastMeasure : this.lastMeasure)
-						.lastOccurrence((this.lastOccurrence.isBefore(_metric.lastOccurrence))? _metric.lastOccurrence : this.lastOccurrence)
+						.lastMeasure(Optional.ofNullable(this.lastOccurrence)
+												.filter(localDate -> localDate.isAfter(_metric.getLastOccurrence()))
+												.map(localDate -> this.getLastMeasure())
+												.orElseGet(_metric::getLastMeasure))
+						.lastOccurrence(Optional.ofNullable(this.lastOccurrence)
+												.filter(localDate -> localDate.isAfter(_metric.getLastOccurrence()))
+												.orElseGet(_metric::getLastOccurrence))
 					.build();
 	}
 	
@@ -407,7 +413,7 @@ public class MetricSnapshot<TYPE>{
 	 */
 	@java.lang.SuppressWarnings("all")
 	public static <T> MetricSnapshotBuilder builder(final MeasureReducer<T> _measureReducer) {
-		return new MetricSnapshotBuilder(_measureReducer);
+		return new MetricSnapshotBuilder<>(_measureReducer);
 	}	
 	/**
 	 * Retrieves a new MetricSnapshotBuilder that clones the given _metricSnapshot
@@ -417,7 +423,7 @@ public class MetricSnapshot<TYPE>{
 	 * @return new MetricSnapshotBuilder
 	 */
 	public static <T> MetricSnapshotBuilder builder(final MeasureReducer<T> _measureReducer,final MetricSnapshot<T> _metricSnapshot) {
-		return new MetricSnapshotBuilder(_measureReducer,_metricSnapshot);
+		return new MetricSnapshotBuilder<>(_measureReducer,_metricSnapshot);
 	}	
 
 	/**
@@ -433,10 +439,10 @@ public class MetricSnapshot<TYPE>{
 						.map(leftName -> Optional.ofNullable(_metric2)
 												.map(MetricSnapshot::getName)
 												.map(leftName::compareTo)
-												.orElse(1))
+												.orElse(-1))
 						.orElseGet(() -> Optional.ofNullable(_metric2)
 												.map(MetricSnapshot::getName)
-												.map(metric -> -1)
+												.map(metric -> 1)
 												.orElse(0));
 	}	
 }
