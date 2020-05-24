@@ -212,7 +212,7 @@ public enum MeasureReducers {
 	 */
 	@SuppressWarnings("unchecked")
 	public <T> MeasureReducer<T> get(final Class<T> _class){
-		return (MeasureReducer<T>)this.reducer;
+		return this.reducer;
 	}
 	/**
 	 * Returns supplier to get the reducer of this enum
